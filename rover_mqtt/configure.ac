@@ -13,7 +13,7 @@ m4_define([rover_mqtt_api_version],
           [rover_mqtt_version_major.rover_mqtt_version_minor])
 
 AC_INIT(rover_mqtt, rover_mqtt_version)
-AM_INIT_AUTOMAKE(rover_mqtt, rover_mqtt_version)
+AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 
