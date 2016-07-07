@@ -26,6 +26,7 @@ AX_CXX_COMPILE_STDCXX_11
 
 AC_LANG([C++])
 
+AX_PTHREAD
 AX_CXX_CHECK_LIB(mosquittopp,
 		 [mosqpp::lib_init(void)],
 		 ,
