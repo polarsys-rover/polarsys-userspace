@@ -1,0 +1,11 @@
+package PolarsysRover;
+
+message Acceleration {
+  required int32 x = 1;
+  required int32 y = 2;
+  required int32 z = 3;
+}
+
+message RoverSensors {
+  required Acceleration accel = 1;
+}

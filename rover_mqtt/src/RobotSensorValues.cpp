@@ -17,7 +17,9 @@ RobotSensorValues::~RobotSensorValues() {
 }
 
 void RobotSensorValues::setAccel(Accel accel) {
+	std::lock_guard<std::mutex> lock(m_mutex);
 
+	m_accel = accel;
 }
 
 Accel RobotSensorValues::getAccel(void) const {

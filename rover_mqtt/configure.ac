@@ -26,14 +26,19 @@ AX_CXX_COMPILE_STDCXX_11
 
 AC_LANG([C++])
 
+# enable pkg-config
+PKG_PROG_PKG_CONFIG
+
 AX_PTHREAD
 AX_CXX_CHECK_LIB(mosquittopp,
 		 [mosqpp::lib_init(void)],
 		 ,
 		 AC_MSG_ERROR([mosquittopp not found.]))
 
-# enable pkg-config
-PKG_PROG_PKG_CONFIG
+PKG_CHECK_MODULES(protobuf, protobuf)
+
+AC_CHECK_PROG([PROTOC], [protoc], [protoc])
+AS_IF([test "x${PROTOC}" == "x"], [AC_MSG_ERROR([protobuf compiler "protoc" not found.])])
 
 # Checks for library functions.
 #AC_CHECK_FUNCS([memset])

@@ -5,6 +5,8 @@
 #include <thread>
 #include <mosquittopp.h>
 
+#include <sensors.pb.h>
+
 class MqttRoverServer: public mosqpp::mosquittopp {
 	virtual void on_connect(int rc) {
 		std::cout << "on_connect: " << rc << std::endl;
@@ -34,6 +36,7 @@ void MQTTThread::operator ()(void) {
 	int ret;
     const std::string payload = "hello world";
 	MqttRoverServer server;
+	std::string encoded;
 
 	ret = server.connect(MQTT_BROKER_ADDR, MQTT_BROKER_PORT, 7200);
 	if (ret != MOSQ_ERR_SUCCESS) {
@@ -46,9 +49,22 @@ void MQTTThread::operator ()(void) {
 	/* Start the mosquitto event loop. */
 	server.loop_start();
 
+	PolarsysRover::RoverSensors sensors;
+	PolarsysRover::Acceleration *accel = new PolarsysRover::Acceleration();
+
+	sensors.set_allocated_accel(accel);
+
 	/* Publish our payload every second. */
 	while (1) {
-		server.publish(NULL, MQTT_TOPIC, payload.length(), payload.c_str(), 0,
+		Accel accelValues = m_sensor_values.getAccel();
+
+		accel->set_x(accelValues.x);
+		accel->set_y(accelValues.y);
+		accel->set_z(accelValues.z);
+
+		sensors.SerializeToString(&encoded);
+
+		server.publish(NULL, MQTT_TOPIC, encoded.length(), encoded.c_str(), 0,
 				false);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
