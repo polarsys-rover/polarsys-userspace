@@ -6,6 +6,14 @@
 
 class Accel {
 public:
+	Accel()
+	: Accel(0, 0, 0)
+	{}
+
+	Accel(uint32_t x, uint32_t y, uint32_t z)
+	: x(x), y(y), z(z)
+	{}
+
 	uint32_t x, y, z;
 };
 
