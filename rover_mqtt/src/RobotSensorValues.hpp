@@ -10,11 +10,11 @@ public:
 	: Accel(0, 0, 0)
 	{}
 
-	Accel(uint32_t x, uint32_t y, uint32_t z)
+	Accel(int32_t x, int32_t y, int32_t z)
 	: x(x), y(y), z(z)
 	{}
 
-	uint32_t x, y, z;
+	int32_t x, y, z;
 };
 
 class RobotSensorValues {

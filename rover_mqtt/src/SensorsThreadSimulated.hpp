@@ -2,13 +2,14 @@
 #define SENSORSTHREADSIMULATED_HPP_
 
 #include "RobotSensorValues.hpp"
+#include "SelectLoopThread.hpp"
 
-class SensorsThreadSimulated {
+class SensorsThreadSimulated : public SelectLoopThread {
 public:
 	SensorsThreadSimulated(RobotSensorValues &sensor_values);
 	virtual ~SensorsThreadSimulated();
 
-	void operator()(void);
+	virtual void timeout(void);
 
 private:
 
