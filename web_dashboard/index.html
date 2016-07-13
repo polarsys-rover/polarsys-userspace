@@ -1,12 +1,22 @@
-<html>
+<html ng-app="roverDashboardApp">
 <head>
-	<script src="jquery-3.0.0.min.js"></script>
-	<script src="bytebuffer.js"></script>
-	<script src="protobuf.js"></script>
-	<script src="mqttws31.js"></script>
-	<script src="script.js"></script>
+    <script src="jquery-3.0.0.min.js"></script>
+    <script src="bytebuffer.js"></script>
+    <script src="protobuf.js"></script>
+    <script src="mqttws31.js"></script>
+    <script src="angular.min.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
-	<h1>Hello!</h1>
+    <div id="sensors">
+        <h3>Sensors</h3>
+        <ul ng-controller="RoverSensorsController">
+            <li>
+                Acceleration: ({{ sensors.accel.x || '?' }},
+                               {{ sensors.accel.y || '?' }},
+                               {{ sensors.accel.z || '?' }})
+            </li>
+        </ul>
+    </div>
 </body>
 </html>

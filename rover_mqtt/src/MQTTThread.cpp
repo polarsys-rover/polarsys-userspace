@@ -29,7 +29,7 @@ MQTTThread::~MQTTThread() {
 
 #define MQTT_BROKER_ADDR "127.0.0.1"
 #define MQTT_BROKER_PORT 1883
-#define MQTT_TOPIC "rover"
+#define MQTT_SENSORS_TOPIC "/polarsys-rover/sensors"
 
 void MQTTThread::operator ()(void) {
 	mosqpp::lib_init();
@@ -64,7 +64,7 @@ void MQTTThread::operator ()(void) {
 
 		sensors.SerializeToString(&encoded);
 
-		server.publish(NULL, MQTT_TOPIC, encoded.length(), encoded.c_str(), 0,
+		server.publish(NULL, MQTT_SENSORS_TOPIC, encoded.length(), encoded.c_str(), 0,
 				false);
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
