@@ -22,8 +22,6 @@ SensorsThreadSimulated::~SensorsThreadSimulated() {
 void SensorsThreadSimulated::timeout(void) {
     Accel accel = m_sensor_values.getAccel();
 
-    std::cout << "Hello" << std::endl;
-
     accel.x += 1;
     accel.y += 2;
     accel.z += 3;

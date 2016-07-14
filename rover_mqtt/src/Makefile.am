@@ -15,8 +15,10 @@ rover_mqtt_SOURCES = \
 	RobotSensorValues.hpp \
 	SensorsThreadSimulated.cpp \
 	SensorsThreadSimulated.hpp \
-	MQTTThread.cpp \
-	MQTTThread.hpp \
+	SensorsPublishThread.cpp \
+	SensorsPublishThread.hpp \
+	MqttInterface.cpp \
+	MqttInterface.hpp \
 	SelectLoopThread.cpp \
 	SelectLoopThread.hpp \
 	sensors.pb.cc \

@@ -7,32 +7,48 @@
 #include <csignal>
 
 #include <mosquittopp.h>
+#include <SensorsPublishThread.hpp>
 #include <SensorsThreadSimulated.hpp>
-#include "MQTTThread.hpp"
+#include "MqttInterface.hpp"
 
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
 static bool should_quit = false;
 
-static void sigIntHandler(int signum) {
-	std::cout << "Caught signal " << signum << ", try to quit." << std::endl;
+static void sigIntHandler(int signum)
+{
+    std::cout << "Caught signal " << signum << ", try to quit." << std::endl;
 
-	std::unique_lock<std::mutex> should_quit_lock(should_quit_mutex);
-	should_quit = true;
-	should_quit_cv.notify_all();
+    std::unique_lock<std::mutex> should_quit_lock(should_quit_mutex);
+    should_quit = true;
+    should_quit_cv.notify_all();
 }
 
-int main() {
+#define MQTT_BROKER_HOST "127.0.0.1"
+#define MQTT_BROKER_PORT 1883
+
+int main(int argc, char *argv[])
+{
+    mosqpp::lib_init();
+
+    MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
+    mqtt_interface.start();
+
+    /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
 
+    /* Thread responsible for faking read sensor values. */
     SensorsThreadSimulated sensors_callback(sensor_values);
     std::thread sensors_thread(std::ref(sensors_callback));
 
-    MQTTThread mqtt_callback(sensor_values);
+    /* Thread responsible for publishing sensor values every second. */
+    SensorsPublishThread mqtt_callback(sensor_values, mqtt_interface);
     std::thread mqtt_thread(std::ref(mqtt_callback));
 
+    /* Install ctrl-C signal handler. */
     signal(SIGINT, sigIntHandler);
 
+    /* Wait until something tells us to quit. */
     std::unique_lock<std::mutex> should_quit_lock(should_quit_mutex);
     should_quit_cv.wait(should_quit_lock, []{ return should_quit; });
 
@@ -43,6 +59,10 @@ int main() {
 
     sensors_thread.join();
     mqtt_thread.join();
+
+    mqtt_interface.stop();
+
+    mosqpp::lib_cleanup();
 
     return 0;
 }
