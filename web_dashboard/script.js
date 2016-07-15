@@ -135,8 +135,13 @@ roverDashboardApp.controller('RoverSensorsController', function ($scope) {
 
 roverDashboardApp.filter('monoFloat', function() {
     return function(input) {
+        if (input == null) {
+            return null;
+        }
+
         var s = "";
-        if (input > 0) {
+
+        if (input >= 0) {
             s += " ";
         }
         s += input.toFixed(2).toString();
