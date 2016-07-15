@@ -11,7 +11,10 @@ BUILT_SOURCES = \
 	controls.pb.h \
 	controls.pb.cc
 
-bin_PROGRAMS = rover_mqtt imu
+bin_PROGRAMS = rover_mqtt imu motor
+
+motor_SOURCES = \
+	motor.cpp
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
