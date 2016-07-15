@@ -22,7 +22,9 @@ private:
 	MqttInterface &m_mqtt_interface;
 
 	std::unique_ptr<PolarsysRover::RoverSensors> m_protobuf_sensors;
-	PolarsysRover::Acceleration *m_protobuf_accel;
+
+	SensorsPublishThread(const SensorsPublishThread &) = delete;
+	void operator=(const SensorsPublishThread&) = delete;
 };
 
 #endif /* SRC_SENSORSPUBLISHTHREAD_HPP_ */

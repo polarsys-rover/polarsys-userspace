@@ -3,30 +3,17 @@
 
 #include <cstdint>
 #include <mutex>
-
-class Accel {
-public:
-	Accel()
-	: Accel(0, 0, 0)
-	{}
-
-	Accel(int32_t x, int32_t y, int32_t z)
-	: x(x), y(y), z(z)
-	{}
-
-	int32_t x, y, z;
-};
+#include <RTIMULib.h>
 
 class RobotSensorValues {
 public:
 	RobotSensorValues();
-	virtual ~RobotSensorValues();
 
-	void setAccel(Accel accel);
-	Accel getAccel(void) const;
+	RTIMU_DATA getData(void) const;
+	void setData(const RTIMU_DATA &data);
 
 private:
-	Accel m_accel;
+	RTIMU_DATA m_data;
 
 	mutable std::mutex m_mutex;
 };

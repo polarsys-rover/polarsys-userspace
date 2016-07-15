@@ -4,7 +4,9 @@
 #include <iostream>
 
 MqttInterface::MqttInterface(std::string broker_host, int broker_port)
-: m_broker_host(broker_host), m_broker_port(broker_port)
+: m_broker_host(broker_host),
+  m_broker_port(broker_port),
+  m_subscriptions()
 {
 }
 

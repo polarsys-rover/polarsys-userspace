@@ -1,11 +1,25 @@
 package PolarsysRover;
 
 message Acceleration {
-  required int32 x = 1;
-  required int32 y = 2;
-  required int32 z = 3;
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
+}
+
+message Gyro {
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
+}
+
+message Compass {
+  required float x = 1;
+  required float y = 2;
+  required float z = 3;
 }
 
 message RoverSensors {
-  required Acceleration accel = 1;
+  optional Acceleration accel = 1;
+  optional Gyro gyro = 2;
+  optional Compass compass = 3;
 }

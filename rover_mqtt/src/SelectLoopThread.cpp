@@ -4,7 +4,8 @@
 
 SelectLoopThread::SelectLoopThread(std::string name, int timeout_ms)
 : m_name(name), m_timeout_ms(timeout_ms),
-  m_quit_read_fd(-1), m_quit_write_fd(-1), m_quit(false)
+  m_quit_read_fd(-1), m_quit_write_fd(-1), m_quit(false),
+  m_callbacks(), m_pollfds()
 {
     int fds[2];
 

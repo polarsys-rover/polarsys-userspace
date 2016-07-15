@@ -7,28 +7,27 @@
 
 #include "RobotSensorValues.hpp"
 
-RobotSensorValues::RobotSensorValues() {
-	// TODO Auto-generated constructor stub
-
+RobotSensorValues::RobotSensorValues() :
+    m_data(),
+    m_mutex()
+{
+    memset(&m_data, 0, sizeof(m_data));
 }
 
-RobotSensorValues::~RobotSensorValues() {
-	// TODO Auto-generated destructor stub
-}
+RTIMU_DATA RobotSensorValues::getData(void) const
+{
 
-void RobotSensorValues::setAccel(Accel accel) {
+    RTIMU_DATA temp;
+    {
 	std::lock_guard<std::mutex> lock(m_mutex);
+	temp = m_data;
+    }
 
-	m_accel = accel;
+    return temp;
 }
 
-Accel RobotSensorValues::getAccel(void) const {
-	Accel ret;
-
-	{
-		std::lock_guard<std::mutex> lock(m_mutex);
-		ret = m_accel;
-	}
-
-	return ret;
+void RobotSensorValues::setData(const RTIMU_DATA &data)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_data = data;
 }

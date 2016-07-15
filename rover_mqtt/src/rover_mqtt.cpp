@@ -3,12 +3,14 @@
 #include <thread>
 #include <condition_variable>
 #include <functional>
+#include <memory>
 
 #include <csignal>
 
 #include <mosquittopp.h>
 #include <SensorsPublishThread.hpp>
 #include <SensorsThreadSimulated.hpp>
+#include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
 
 static std::condition_variable should_quit_cv;
@@ -37,9 +39,15 @@ int main(int argc, char *argv[])
     /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
 
-    /* Thread responsible for faking read sensor values. */
-    SensorsThreadSimulated sensors_callback(sensor_values);
-    std::thread sensors_thread(std::ref(sensors_callback));
+    std::unique_ptr<SelectLoopThread> sensors_callback = nullptr;
+    int simulated = 0;
+    if (simulated) {
+	/* Thread responsible for faking read sensor values. */
+	sensors_callback.reset(new SensorsThreadSimulated(sensor_values));
+    } else {
+	sensors_callback.reset(new SensorsThread(sensor_values));
+    }
+    std::thread sensors_thread(std::ref(*sensors_callback));
 
     /* Thread responsible for publishing sensor values every second. */
     SensorsPublishThread mqtt_callback(sensor_values, mqtt_interface);
@@ -54,7 +62,7 @@ int main(int argc, char *argv[])
 
     std::cout << "main thread unblocked, trying to quit." << std::endl;
 
-    sensors_callback.please_stop();
+    sensors_callback->please_stop();
     mqtt_callback.please_stop();
 
     sensors_thread.join();

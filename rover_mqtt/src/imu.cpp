@@ -17,6 +17,14 @@ int main(int argc, char **argv)
 	RTIMU *imu = RTIMU::createIMU(&settings);
 	imu->IMUInit();
 
+	RTPressure *pressure = RTPressure::createPressure(&settings);
+	pressure->pressureInit();
+	printf("pressure 0x%x\n", settings.m_I2CPressureAddress);
+
+	RTHumidity *humidity = RTHumidity::createHumidity(&settings);
+	humidity->humidityInit();
+	printf("humidity 0x%x\n", settings.m_I2CHumidityAddress);
+
 	while(true) {
 		imu->IMURead();
 		const RTIMU_DATA data = imu->getIMUData();

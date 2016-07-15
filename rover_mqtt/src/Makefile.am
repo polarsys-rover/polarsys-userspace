@@ -15,25 +15,33 @@ rover_mqtt_SOURCES = \
 	RobotSensorValues.hpp \
 	SensorsThreadSimulated.cpp \
 	SensorsThreadSimulated.hpp \
+	SensorsThread.cpp \
+	SensorsThread.hpp \
 	SensorsPublishThread.cpp \
 	SensorsPublishThread.hpp \
 	MqttInterface.cpp \
 	MqttInterface.hpp \
 	SelectLoopThread.cpp \
-	SelectLoopThread.hpp \
-	sensors.pb.cc \
-	sensors.pb.h
+	SelectLoopThread.hpp
+
+noinst_LIBRARIES = libproto.a
+libproto_a_SOURCES = sensors.pb.cc sensors.pb.h
+libproto_a_CFLAGS =  = \
+	$(protobuf_CFLAGS) \
+	-Wall -Werror
 
 rover_mqtt_CXXFLAGS = \
 	$(rover_mqtt_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(protobuf_CFLAGS) \
-	-Wall -Werror
+	-Wall -Werror -Weffc++
 
 rover_mqtt_LDADD = \
 	$(rover_mqtt_LIBS) \
 	$(PTHREAD_LIBS) \
-	$(protobuf_LIBS)
+	$(protobuf_LIBS) \
+	-lRTIMULib \
+	libproto.a
 
 imu_SOURCES = \
 	imu.cpp

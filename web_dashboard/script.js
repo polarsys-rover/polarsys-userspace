@@ -131,3 +131,15 @@ roverDashboardApp.controller('RoverSensorsController', function ($scope) {
         }
     });
 });
+
+
+roverDashboardApp.filter('monoFloat', function() {
+    return function(input) {
+        var s = "";
+        if (input > 0) {
+            s += " ";
+        }
+        s += input.toFixed(2).toString();
+        return s;
+    }
+});

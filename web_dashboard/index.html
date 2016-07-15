@@ -6,15 +6,26 @@
     <script src="mqttws31.js"></script>
     <script src="angular.min.js"></script>
     <script src="script.js"></script>
+    <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
     <div id="sensors">
         <h3>Sensors</h3>
         <ul ng-controller="RoverSensorsController">
-            <li>
-                Acceleration: ({{ sensors.accel.x || '?' }},
-                               {{ sensors.accel.y || '?' }},
-                               {{ sensors.accel.z || '?' }})
+            <li class="mono">
+                Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
+                         &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
+                         &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
+            </li>
+            <li class="mono">
+                Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
+                 &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
+                 &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
+            </li>
+            <li class="mono">
+                Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
+                    &nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
+                    &nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
             </li>
         </ul>
     </div>
