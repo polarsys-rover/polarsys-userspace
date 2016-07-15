@@ -25,13 +25,13 @@ rover_mqtt_SOURCES = \
 	sensors.pb.h
 
 rover_mqtt_CXXFLAGS = \
-	$(libmosquittopp_CFLAGS) \
+	$(rover_mqtt_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(protobuf_CFLAGS) \
 	-Wall -Werror
 
 rover_mqtt_LDADD = \
-	$(libmosquittopp_LIBS) \
+	$(rover_mqtt_LIBS) \
 	$(PTHREAD_LIBS) \
 	$(protobuf_LIBS)
 

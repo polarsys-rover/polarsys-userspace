@@ -30,7 +30,10 @@ AC_LANG([C++])
 PKG_PROG_PKG_CONFIG
 
 AX_PTHREAD
-PKG_CHECK_MODULES(libmosquittopp, libmosquittopp)
+AX_CXX_CHECK_LIB(mosquittopp,
+		 [mosqpp::lib_init(void)],
+		 ,
+		 AC_MSG_ERROR([mosquittopp not found.]))
 
 PKG_CHECK_MODULES(protobuf, protobuf)
 
