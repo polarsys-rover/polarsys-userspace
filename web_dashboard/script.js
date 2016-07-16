@@ -95,6 +95,16 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
     );
 }]);
 
+roverDashboardApp.controller('RoverControlsController', function ($scope) {
+    $scope.controls = {
+        left: 0,
+        right: 0,
+    };
+    
+    $scope.setLeft = function () {
+        console.log("YEAAA");
+    };
+});
 
 roverDashboardApp.filter('monoFloat', function() {
     return function(input) {

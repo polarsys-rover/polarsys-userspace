@@ -41,6 +41,13 @@
 				</li>
 			</ul>
 		</div>
+		<div id="controls">
+			<h3>Controls</h3>
+			<ul ng-controller="RoverControlsController">
+				<li>Left: <input min="-100" max="100" type="range" ng-model="controls.left" /> {{ controls.left }}</li>
+				<li>Left: <input min="-100" max="100" type="range" ng-model="controls.right" /> {{ controls.right }}</li>
+			</ul>
+		</div>
 	</div>
 </body>
 </html>
