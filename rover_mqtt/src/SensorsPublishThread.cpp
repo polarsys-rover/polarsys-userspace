@@ -14,7 +14,7 @@
 
 SensorsPublishThread::SensorsPublishThread(const RobotSensorValues &sensor_values,
 					   MqttInterface &mqtt_interface)
-: SelectLoopThread("mqtt-thread", 100),
+: SelectLoopThread("mqtt-thread", 200),
   m_sensor_values(sensor_values),
   m_mqtt_interface(mqtt_interface),
   m_protobuf_sensors(new PolarsysRover::RoverSensors())
