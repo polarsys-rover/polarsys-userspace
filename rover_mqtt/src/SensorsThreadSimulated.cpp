@@ -23,6 +23,7 @@ void SensorsThreadSimulated::timeout(void)
 {
     RTIMU_DATA data = m_sensor_values.getData();
 
+    data.accelValid = true;
     data.accel.setX(data.accel.x() + 1);
     data.accel.setY(data.accel.y() + 2);
     data.accel.setZ(data.accel.z() + 3);
