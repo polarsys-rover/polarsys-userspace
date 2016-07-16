@@ -87,14 +87,49 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
     create_protobuf_decoder(
         'sensors.proto', 'PolarsysRover.RoverSensors',
         function (errorStr, messageDecoder) {
-            $scope.messageDecoder = messageDecoder;
+            if (errorStr == null) {
+                $scope.messageDecoder = messageDecoder;
 
-            /* Ok, we got the schematic to decode protobuf messages, subscribe to the MQTT topic. */
-            mqtt.subscribe('/polarsys-rover/sensors', onMessage);
+                /* Ok, we got the schematic to decode protobuf messages, subscribe to the MQTT topic. */
+                mqtt.subscribe('/polarsys-rover/sensors', onMessage);
+            } else {
+                console.log("RoverSensorsController error: " + errorStr);
+            }
         }
     );
 }]);
 
+roverDashboardApp.controller('RoverControlsController', ['$scope', 'mqtt', function ($scope, mqtt) {
+    $scope.controls = {
+        left: 0,
+        right: 0,
+    };
+
+    $scope.messageEncoder = null;
+
+    create_protobuf_decoder(
+        'controls.proto', 'PolarsysRover.RoverControls',
+        function (errorStr, messageEncoder) {
+            if (errorStr == null) {
+                $scope.messageEncoder = messageEncoder;
+            } else {
+                console.log("RoverControlsController error: " + errorStr);
+            }
+        }
+    );
+
+    $scope.onChange = function () {
+        if ($scope.messageEncoder != null) {
+            var data = {
+              left: parseInt($scope.controls.left),
+              right: parseInt($scope.controls.right),
+            };
+            var byteBuffer = $scope.messageEncoder.encode(data);
+
+            mqtt.publish('/polarsys-rover/controls', byteBuffer.buffer);
+        }
+    };
+}]);
 
 roverDashboardApp.filter('monoFloat', function() {
     return function(input) {
@@ -129,6 +164,15 @@ roverDashboardApp.factory('mqtt', function ($rootScope, $timeout) {
         }
         service._subscriptions[topic] = callback
     };
+
+    service.publish = function (topic, data) {
+        if (service.is_connected()) {
+            //var msg = new Paho.MQTT.Message(data.buffer);
+
+            //console.log(msg);
+            service.client.send(topic, data);
+        }
+    }
 
     service.is_connected = function () {
         return service.client != null;

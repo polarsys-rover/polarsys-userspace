@@ -3,9 +3,13 @@
 	$(PROTOC) --proto_path=$(srcdir) --cpp_out=$(builddir) $^
 
 
-dist_noinst_DATA = sensors.proto
+dist_noinst_DATA = sensors.proto controls.proto
 
-BUILT_SOURCES = sensors.pb.h
+BUILT_SOURCES = \
+	sensors.pb.h \
+	sensors.pb.cc \
+	controls.pb.h \
+	controls.pb.cc
 
 bin_PROGRAMS = rover_mqtt imu
 
@@ -25,7 +29,12 @@ rover_mqtt_SOURCES = \
 	SelectLoopThread.hpp
 
 noinst_LIBRARIES = libproto.a
-libproto_a_SOURCES = sensors.pb.cc sensors.pb.h
+libproto_a_SOURCES = \
+	sensors.pb.cc \
+	sensors.pb.h \
+	controls.pb.cc \
+	controls.pb.h
+
 libproto_a_CFLAGS =  = \
 	$(protobuf_CFLAGS) \
 	-Wall -Werror

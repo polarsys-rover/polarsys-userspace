@@ -15,7 +15,7 @@ public:
 
     void publish(std::string topic, int payload_len, const void *payload);
 
-    typedef std::function<void()> CallbackType;
+    typedef std::function<void(std::string payload)> CallbackType;
     void subscribe(std::string topic, CallbackType callback);
 
 private:

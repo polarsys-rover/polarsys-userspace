@@ -13,6 +13,8 @@
 #include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
 
+#include "controls.pb.h"
+
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
 static bool should_quit = false;
@@ -29,18 +31,29 @@ static void sigIntHandler(int signum)
 #define MQTT_BROKER_HOST "127.0.0.1"
 #define MQTT_BROKER_PORT 1883
 
+// FIXME: This is just a proof of concept, it should obviously not be there.
+void i_got_a_message(std::string payload) {
+    std::cout << "I got a message of length " << payload.size()  << " " << payload.length() << std::endl;
+    PolarsysRover::RoverControls controls;
+    controls.ParseFromString(payload);
+
+    std::cout << "Message = " << controls.DebugString() << std::endl;
+
+}
+
 int main(int argc, char *argv[])
 {
     mosqpp::lib_init();
 
     MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
     mqtt_interface.start();
+    mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
 
     /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
 
     std::unique_ptr<SelectLoopThread> sensors_callback = nullptr;
-    int simulated = 0;
+    int simulated = 1;
     if (simulated) {
 	/* Thread responsible for faking read sensor values. */
 	sensors_callback.reset(new SensorsThreadSimulated(sensor_values));

@@ -43,19 +43,23 @@ void MqttInterface::on_disconnect()
 
 void MqttInterface::on_message(const mosquitto_message *message)
 {
-    // TODO: for each subscribed callback, check if mosqpp::topic_matches_sub(sub, topic, result)
-    // If so, call it
-    // message->topic
+    std::string s((const char *) message->payload, message->payloadlen);
 
     for (auto& pair : m_subscriptions) {
 	bool res;
 	std::string sub = pair.first;
 	CallbackType &cb = pair.second;
 
-	if (mosqpp::topic_matches_sub(sub.c_str(), message->topic, &res)) {
+	if (mosqpp::topic_matches_sub(sub.c_str(), message->topic, &res) == MOSQ_ERR_SUCCESS) {
 	    if (res) {
-		cb();
+		cb(s);
 	    }
 	}
     }
+}
+
+void MqttInterface::subscribe(std::string topic, CallbackType callback)
+{
+    mosqpp::mosquittopp::subscribe(NULL, topic.c_str(), 0);
+    m_subscriptions[topic] = callback;
 }
