@@ -14,7 +14,9 @@ BUILT_SOURCES = \
 bin_PROGRAMS = rover_mqtt imu motor
 
 motor_SOURCES = \
-	motor.cpp
+	motor.cpp \
+	UltraBorg.hpp \
+	UltraBorg.cpp
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
@@ -29,7 +31,9 @@ rover_mqtt_SOURCES = \
 	MqttInterface.cpp \
 	MqttInterface.hpp \
 	SelectLoopThread.cpp \
-	SelectLoopThread.hpp
+	SelectLoopThread.hpp \
+	UltraBorg.cpp \
+	UltraBorg.hpp
 
 noinst_LIBRARIES = libproto.a
 libproto_a_SOURCES = \

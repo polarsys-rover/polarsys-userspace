@@ -30,6 +30,7 @@ void SensorsPublishThread::timeout (void)
 
     m_protobuf_sensors->Clear();
     if (data.accelValid) {
+	std::cout << "pub accel" << std::endl;
 	auto accel = m_protobuf_sensors->mutable_accel();
 	accel->set_x(data.accel.x());
 	accel->set_y(data.accel.y());
