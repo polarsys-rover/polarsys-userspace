@@ -6,9 +6,9 @@
  */
 
 /* Generate a random string to use as an MQTT client id. */
-function generateClientId(basename) {
+function generateClientId() {
 	var randomLen = 16;
-    var clientId = 'client_' + basename + '_';
+    var clientId = 'client_';
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
     for (i = 0; i < randomLen; i++) {
@@ -19,118 +19,81 @@ function generateClientId(basename) {
     return clientId;
 }
 
-/* Client used to subscribe to an MQTT topic over websockets, where the messages
-   are protobuf message. */
-var ProtobufOverMQTTOverWebsocketsClient = function (protobufFileUrl, protobufTypename, mqttHost, mqttPort, mqttClientId, mqttSubscribeTopic, onMessage) {
-	console.log('Creating a ProtobufOverMQTTOverWebsocketsClient');
+var roverDashboardApp = angular.module('roverDashboardApp', []);
 
-	this.protobufFileUrl = protobufFileUrl;
-	this.protobufTypename = protobufTypename;
-	this.mqttHost = mqttHost;
-	this.mqttPort = mqttPort;
-	this.mqttClientId = mqttClientId;
-	this.mqttSubscribeTopic = mqttSubscribeTopic;
-	this.onMessage = onMessage;
-}
+roverDashboardApp.controller('MainPageController', ['$scope', 'mqtt', function ($scope, mqtt) {
+	$scope.host = '127.0.0.1';
+	$scope.port = 9001;
+	$scope.mqttService = mqtt;
 
-ProtobufOverMQTTOverWebsocketsClient.prototype.connect = function (callback) {
-    var instance = this;
+	$scope.connect = function () {
+		mqtt.connect($scope.host, $scope.port, function (errorStr) {
+			console.log("Result = " + errorStr);
+		});
+	}
 
-    console.log('Trying to load proto file ' + instance.protobufFileUrl);
+	$scope.disconnect = function () {
+		mqtt.disconnect();
+	}
+}]);
 
-    dcodeIO.ProtoBuf.loadProtoFile(instance.protobufFileUrl, function (err, builder) {
+function create_protobuf_decoder(protobufFileUrl, protobufTypename, callback) {
+    console.log('Trying to load proto file ' + protobufFileUrl);
+
+    dcodeIO.ProtoBuf.loadProtoFile(protobufFileUrl, function (err, builder) {
         if (err != null) {
             /* Failure to create the protobuf builder. */
             console.log("Failed to create protobuf builder: " + err);
-            callback(err);
+            callback(err, null);
             return;
         }
 
-        instance.protobufBuilder = builder;
+        console.log('Successfully loaded proto file ' + protobufFileUrl);
+
+        protobufBuilder = builder;
 
         /* Now that we have a message builder for our proto, try to instanciate a
            Message type object with the requested type name. */
-        instance.protobufMessage = instance.protobufBuilder.build(instance.protobufTypename);
-
-        /* Try to connect to the MQTT broker. */
-        console.log('Trying to connect to the MQTT broker ' + instance.mqttHost + ':' + instance.mqttPort
-                                                            + ' as client ' + instance.mqttClientId);
-        instance.mqtt_client = new Paho.MQTT.Client(instance.mqttHost, instance.mqttPort, instance.mqttClientId);
-
-        /* Setup the MQTT client callbacks. */
-        instance.mqtt_client.onMessageArrived = function (message) {
-            instance.onMessageArrived(message);
-        };
-        instance.mqtt_client.onMessageDelivered = function (message) {
-            instance.onMessageDelivered(message);
-        };
-        instance.mqtt_client.onConnectionLost = function (message) {
-            instance.onConnectionLost(message);
-        };
-
-        /* Connect for real to the broker. */
-        instance.mqtt_client.connect({
-            onSuccess: function (context) {
-                console.log('Connected to broker, subscribing to ' + instance.mqttSubscribeTopic);
-
-                /* Subscribe to the requested topic. */
-                instance.mqtt_client.subscribe(instance.mqttSubscribeTopic);
-
-                /* Everything went fine, call the user callback. */
-                callback(null);
-            },
-            onFailure: function (response) {
-                /* Failure to connect to the broker. */
-                callback(response.errorMessage);
-            },
-        });
+        protobufMessage = protobufBuilder.build(protobufTypename);
+        console.log('Successfully created a ' + protobufTypename + ' message instance.');
+        callback(null, protobufMessage);
     });
 }
-
-ProtobufOverMQTTOverWebsocketsClient.prototype.onMessageArrived = function (message) {
-    /* A message arrived, try to decode it using the previously instanciented Message. */
-    decodedMessage = this.protobufMessage.decode(message.payloadBytes);
-    this.onMessage(decodedMessage);
-}
-
-ProtobufOverMQTTOverWebsocketsClient.prototype.onMessageDelivered = function (message) {
-    console.log('Message delivered');
-}
-
-ProtobufOverMQTTOverWebsocketsClient.prototype.onConnectionLost = function (response) {
-    if (response.errorCode != 0) {
-        console.log('Connection lost: ' + response.errorMessage);
-    } else {
-        console.log('Disconnected.');
-    }
-}
-
-var roverDashboardApp = angular.module('roverDashboardApp', []);
 
 /* Angular controller for the sensors panel. */
-roverDashboardApp.controller('RoverSensorsController', function ($scope) {
-    $scope.sensors = null;
+roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', function ($scope, mqtt) {
+    $scope.sensors = {
+        accel: {},
+        gyro: {},
+        compass: {},
+    };
 
     var onMessage = function (message) {
-        console.log("On message");
-        console.log(message);
-        $scope.$apply(function () {
-            $scope.sensors = message;
-        });
-    }
 
-    var clientId = generateClientId('sensors');
-    var client = new ProtobufOverMQTTOverWebsocketsClient('sensors.proto', 'PolarsysRover.RoverSensors',
-                                                          '127.0.0.1', 9001, clientId, '/polarsys-rover/sensors',
-                                                          onMessage);
-    client.connect(function (err) {
-        if (err) {
-            console.log('Error: ' + err);
-        } else {
-            console.log('We are connected!');
+        var decodedMessage = $scope.messageDecoder.decode(message.payloadBytes);
+        $scope.$apply(function () {
+            if (decodedMessage.accel != null) {
+                $scope.sensors.accel.x = decodedMessage.accel.x;
+                $scope.sensors.accel.y = decodedMessage.accel.y;
+                $scope.sensors.accel.z = decodedMessage.accel.z;
+            } else {
+                $scope.sensors.accel.x = null;
+                $scope.sensors.accel.y = null;
+                $scope.sensors.accel.z = null;
+            }
+        });
+    };
+
+    create_protobuf_decoder(
+        'sensors.proto', 'PolarsysRover.RoverSensors',
+        function (errorStr, messageDecoder) {
+            $scope.messageDecoder = messageDecoder;
+
+            /* Ok, we got the schematic to decode protobuf messages, subscribe to the MQTT topic. */
+            mqtt.subscribe('/polarsys-rover/sensors', onMessage);
         }
-    });
-});
+    );
+}]);
 
 
 roverDashboardApp.filter('monoFloat', function() {
@@ -147,4 +110,105 @@ roverDashboardApp.filter('monoFloat', function() {
         s += input.toFixed(2).toString();
         return s;
     }
+});
+
+
+
+roverDashboardApp.factory('mqtt', function ($rootScope) {
+	var service = {};
+
+	service.client = null;
+    service._subscriptions = [];
+
+    service.subscribe = function (topic, callback) {
+
+        if (service.is_connected()) {
+            console.log("(1) Subscribing to " + topic);
+            // FIXME: we should check if subscribe worked.
+            service.client.subscribe(topic);
+        }
+        service._subscriptions[topic] = callback
+    };
+
+    service.is_connected = function () {
+        return service.client != null;
+    }
+
+	service.connect = function (mqttHost, mqttPort, callback) {
+		var clientId = generateClientId();
+
+		service.disconnect();
+
+		/* Try to connect to the MQTT broker. */
+        console.log('Trying to connect to the MQTT broker ' + mqttHost + ':' + mqttPort
+                                                            + ' as client ' + clientId);
+        var client = new Paho.MQTT.Client(mqttHost, mqttPort, clientId);
+
+        /* Setup the MQTT client callbacks. */
+        client.onMessageArrived = function (message) {
+            service._onMessageArrived(message);
+        };
+        client.onMessageDelivered = function (message) {
+            service._onMessageDelivered(message);
+        };
+        client.onConnectionLost = function (message) {
+            service._onConnectionLost(message);
+        };
+
+        /* Connect for real to the broker. */
+        client.connect({
+            onSuccess: function (context) {
+                for (topic in service._subscriptions) {
+                    console.log("(2) Subscribing to " + topic);
+                    client.subscribe(topic);
+                }
+
+                $rootScope.$apply(function () {
+                    service.client = client;
+                });
+
+                /* Everything went fine, call the user callback without error. */
+                callback(null);
+            },
+            onFailure: function (response) {
+                /* Failure to connect to the broker. */
+                callback(response.errorMessage);
+            },
+        });
+	};
+
+	service.disconnect = function () {
+		if (service.client != null) {
+			service.client.disconnect();
+            service.client = null;
+		}
+	};
+
+	service._onMessageArrived = function (message) {
+		/* A message arrived, try to decode it using the previously instanciented Message. */
+		//decodedMessage = this.protobufMessage.decode(message.payloadBytes);
+		//his.onMessage(decodedMessage);
+
+        if (message.destinationName in service._subscriptions) {
+            service._subscriptions[message.destinationName](message)
+        }
+	}
+
+	service._onMessageDelivered = function (message) {
+		console.log('Message delivered');
+	}
+
+	service._onConnectionLost = function (response) {
+        $rootScope.$apply(function () {
+            service.client = null;
+        });
+
+		if (response.errorCode != 0) {
+			console.log('Connection lost: ' + response.errorMessage);
+		} else {
+			console.log('Disconnected.');
+		}
+	}
+
+	return service;
 });

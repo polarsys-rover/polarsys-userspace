@@ -9,25 +9,38 @@
     <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
-    <div id="sensors">
-        <h3>Sensors</h3>
-        <ul ng-controller="RoverSensorsController">
-            <li class="mono">
-                Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
-                         &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
-                         &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
-            </li>
-            <li class="mono">
-                Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
-                 &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
-                 &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
-            </li>
-            <li class="mono">
-                Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
-                    &nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
-                    &nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
-            </li>
-        </ul>
-    </div>
+	<div ng-controller="MainPageController" ng-cloak>
+		<form ng-submit="connect()" ng-show="!mqttService.is_connected()">
+			<input type="text" ng-model="host" placeholder="host">
+			<input type="number" min="1" max="65535" ng-model="port" placeholder="port">
+			<input type="submit" value="Connect!">
+		</form>
+
+		<form ng-submit="disconnect()" ng-show="mqttService.is_connected()">
+			<input type="submit" value="Disconnect!">
+		</form>
+
+
+		<div id="sensors">
+			<h3>Sensors</h3>
+			<ul ng-controller="RoverSensorsController" ng-cloak>
+				<li class="mono">
+					Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
+							 &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
+							 &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
+				</li>
+				<li class="mono">
+					Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
+					 &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
+					 &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
+				</li>
+				<li class="mono">
+					Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
+						&nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
+						&nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
+				</li>
+			</ul>
+		</div>
+	</div>
 </body>
 </html>
