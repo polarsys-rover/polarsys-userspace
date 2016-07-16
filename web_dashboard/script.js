@@ -114,7 +114,7 @@ roverDashboardApp.filter('monoFloat', function() {
 
 
 
-roverDashboardApp.factory('mqtt', function ($rootScope) {
+roverDashboardApp.factory('mqtt', function ($rootScope, $timeout) {
 	var service = {};
 
 	service.client = null;
@@ -185,10 +185,6 @@ roverDashboardApp.factory('mqtt', function ($rootScope) {
 	};
 
 	service._onMessageArrived = function (message) {
-		/* A message arrived, try to decode it using the previously instanciented Message. */
-		//decodedMessage = this.protobufMessage.decode(message.payloadBytes);
-		//his.onMessage(decodedMessage);
-
         if (message.destinationName in service._subscriptions) {
             service._subscriptions[message.destinationName](message)
         }
@@ -199,9 +195,12 @@ roverDashboardApp.factory('mqtt', function ($rootScope) {
 	}
 
 	service._onConnectionLost = function (response) {
-        $rootScope.$apply(function () {
+        // Use $timeout instead of $rootScope.$apply, because this function might
+        // be called from Angular (e.g. when the user clicks on disconnect) and
+        // from outside (e.g. when the network goes down).
+        $timeout(function () {
             service.client = null;
-        });
+        }, 0);
 
 		if (response.errorCode != 0) {
 			console.log('Connection lost: ' + response.errorMessage);
