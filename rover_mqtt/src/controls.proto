@@ -1,0 +1,6 @@
+package PolarsysRover;
+
+message RoverControls {
+  optional sint32 left = 1;
+  optional sint32 right = 2;
+}
