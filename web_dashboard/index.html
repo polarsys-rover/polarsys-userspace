@@ -23,27 +23,30 @@
 
 		<div id="sensors">
 			<h3>Sensors</h3>
-			<ul ng-controller="RoverSensorsController" ng-cloak>
-				<li class="mono">
+			<ul ng-controller="RoverSensorsController" class="mono" ng-cloak>
+				<li>
 					Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
 							 &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
 							 &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
 				</li>
-				<li class="mono">
+				<li>
 					Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
 					 &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
 					 &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
 				</li>
-				<li class="mono">
+				<li>
 					Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
 						&nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
 						&nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
+				</li>
+				<li clas>
+					Sonar: {{ sensors.sonar || '?' }}
 				</li>
 			</ul>
 		</div>
 		<div id="controls">
 			<h3>Controls</h3>
-			<ul ng-controller="RoverControlsController">
+			<ul ng-controller="RoverControlsController" class="mono">
 				<li>Left: <input min="-100" max="100" type="range" ng-model="controls.left" ng-change="onChange()"/> {{ controls.left }}</li>
 				<li>Right: <input min="-100" max="100" type="range" ng-model="controls.right" ng-change="onChange()" /> {{ controls.right }}</li>
 			</ul>

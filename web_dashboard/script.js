@@ -66,6 +66,7 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
         accel: {},
         gyro: {},
         compass: {},
+        sonar: null,
     };
 
     var onMessage = function (message) {
@@ -81,6 +82,28 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
                 $scope.sensors.accel.y = null;
                 $scope.sensors.accel.z = null;
             }
+
+            if (decodedMessage.gyro != null) {
+                $scope.sensors.gyro.x = decodedMessage.gyro.x;
+                $scope.sensors.gyro.y = decodedMessage.gyro.y;
+                $scope.sensors.gyro.z = decodedMessage.gyro.z;
+            } else {
+                $scope.sensors.gyro.x = null;
+                $scope.sensors.gyro.y = null;
+                $scope.sensors.gyro.z = null;
+            }
+
+            if (decodedMessage.compass != null) {
+                $scope.sensors.compass.x = decodedMessage.compass.x;
+                $scope.sensors.compass.y = decodedMessage.compass.y;
+                $scope.sensors.compass.z = decodedMessage.compass.z;
+            } else {
+                $scope.sensors.compass.x = null;
+                $scope.sensors.compass.y = null;
+                $scope.sensors.compass.z = null;
+            }
+
+            $scope.sensors.sonar = decodedMessage.sonar;
         });
     };
 

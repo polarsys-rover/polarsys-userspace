@@ -30,6 +30,8 @@ static void sigIntHandler(int signum)
 
 #define MQTT_BROKER_HOST "127.0.0.1"
 #define MQTT_BROKER_PORT 1883
+#define I2C_DEV "/dev/i2c-1"
+#define I2C_ULTRABORG_ADDR 0x36
 
 // FIXME: This is just a proof of concept, it should obviously not be there.
 void i_got_a_message(std::string payload) {
@@ -45,6 +47,13 @@ int main(int argc, char *argv[])
 {
     mosqpp::lib_init();
 
+    UltraBorg ultra_borg(I2C_DEV, I2C_ULTRABORG_ADDR);
+    UltraBorg *ultra_borg_p = &ultra_borg;
+    if (!ultra_borg.init()) {
+	std::cerr << "Could not initialize UltraBorg" << std::endl;
+	ultra_borg_p = nullptr;
+    }
+
     MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
     mqtt_interface.start();
     mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
@@ -53,12 +62,12 @@ int main(int argc, char *argv[])
     RobotSensorValues sensor_values;
 
     std::unique_ptr<SelectLoopThread> sensors_callback = nullptr;
-    int simulated = 1;
+    int simulated = 0;
     if (simulated) {
 	/* Thread responsible for faking read sensor values. */
 	sensors_callback.reset(new SensorsThreadSimulated(sensor_values));
     } else {
-	sensors_callback.reset(new SensorsThread(sensor_values));
+	sensors_callback.reset(new SensorsThread(sensor_values, ultra_borg_p));
     }
     std::thread sensors_thread(std::ref(*sensors_callback));
 
