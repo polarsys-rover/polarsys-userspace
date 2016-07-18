@@ -22,11 +22,18 @@ function generateClientId() {
 var roverDashboardApp = angular.module('roverDashboardApp', []);
 
 roverDashboardApp.controller('MainPageController', ['$scope', 'mqtt', function ($scope, mqtt) {
-	$scope.host = '127.0.0.1';
-	$scope.port = 9001;
+    /* localStorage refers to https://developer.mozilla.org/en-US/docs/Web/API/Storage */
+    var host = localStorage.getItem('mqtt-host') || '127.0.0.1';
+    var port = parseInt(localStorage.getItem('mqtt-port')) || 9001;
+
+	$scope.host = host;
+	$scope.port = port;
 	$scope.mqttService = mqtt;
 
 	$scope.connect = function () {
+        localStorage.setItem('mqtt-host', $scope.host);
+        localStorage.setItem('mqtt-port', $scope.port);
+
 		mqtt.connect($scope.host, $scope.port, function (errorStr) {
 			console.log("Result = " + errorStr);
 		});
