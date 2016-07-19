@@ -8,11 +8,12 @@
 #include <csignal>
 
 #include <mosquittopp.h>
+#include <MotorsControlThread.hpp>
 #include <SensorsPublishThread.hpp>
 #include <SensorsThreadSimulated.hpp>
 #include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
-
+#include "PicoBorgRev.hpp"
 #include "controls.pb.h"
 
 static std::condition_variable should_quit_cv;
@@ -31,32 +32,39 @@ static void sigIntHandler(int signum)
 #define MQTT_BROKER_HOST "127.0.0.1"
 #define MQTT_BROKER_PORT 1883
 #define I2C_DEV "/dev/i2c-1"
-#define I2C_ULTRABORG_ADDR 0x36
+#define I2C_ULTRA_BORG_ADDR 0x36
+#define I2C_PICO_BORG_REF_ADDR 0x44
 
 // FIXME: This is just a proof of concept, it should obviously not be there.
-void i_got_a_message(std::string payload) {
+/*void i_got_a_message(std::string payload) {
     std::cout << "I got a message of length " << payload.size()  << " " << payload.length() << std::endl;
     PolarsysRover::RoverControls controls;
     controls.ParseFromString(payload);
 
     std::cout << "Message = " << controls.DebugString() << std::endl;
 
-}
+}*/
 
 int main(int argc, char *argv[])
 {
     mosqpp::lib_init();
 
-    UltraBorg ultra_borg(I2C_DEV, I2C_ULTRABORG_ADDR);
+    MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
+    mqtt_interface.start();
+    //mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
+
+    UltraBorg ultra_borg(I2C_DEV, I2C_ULTRA_BORG_ADDR);
     UltraBorg *ultra_borg_p = &ultra_borg;
     if (!ultra_borg.init()) {
 	std::cerr << "Could not initialize UltraBorg" << std::endl;
 	ultra_borg_p = nullptr;
     }
 
-    MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
-    mqtt_interface.start();
-    mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
+    PicoBorgRev pico_borg_rev(I2C_DEV, I2C_PICO_BORG_REF_ADDR);
+    if (!pico_borg_rev.init()) {
+	std::cerr << "Could not initialize PicoBorgRev" << std::endl;
+	return 1;
+    }
 
     /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
@@ -74,6 +82,9 @@ int main(int argc, char *argv[])
     /* Thread responsible for publishing sensor values every second. */
     SensorsPublishThread mqtt_callback(sensor_values, mqtt_interface);
     std::thread mqtt_thread(std::ref(mqtt_callback));
+
+    MotorsControlThread motors_control_callback(pico_borg_rev, mqtt_interface);
+    std::thread motors_control_thread(std::ref(motors_control_callback));
 
     /* Install ctrl-C signal handler. */
     signal(SIGINT, sigIntHandler);

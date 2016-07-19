@@ -28,8 +28,12 @@ rover_mqtt_SOURCES = \
 	SensorsThread.hpp \
 	SensorsPublishThread.cpp \
 	SensorsPublishThread.hpp \
+	MotorsControlThread.cpp \
+	MotorsControlThread.hpp \
 	MqttInterface.cpp \
 	MqttInterface.hpp \
+	PicoBorgRev.cpp \
+	PicoBorgRev.hpp \
 	SelectLoopThread.cpp \
 	SelectLoopThread.hpp \
 	UltraBorg.cpp \

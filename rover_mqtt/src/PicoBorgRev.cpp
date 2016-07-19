@@ -94,8 +94,8 @@ bool PicoBorgRev::SetMotors(float power_left, float power_right) {
     int ret;
     bool res = true;
 
-    const uint8_t command_left = power_left < 0 ? COMMAND_SET_A_REV : COMMAND_SET_A_FWD;
-    const uint8_t command_right = power_right > 0 ? COMMAND_SET_B_REV : COMMAND_SET_B_FWD;
+    const uint8_t command_left = power_left > 0 ? COMMAND_SET_A_REV : COMMAND_SET_A_FWD;
+    const uint8_t command_right = power_right < 0 ? COMMAND_SET_B_REV : COMMAND_SET_B_FWD;
 
     power_left = std::min(std::abs(power_left), 1.0f);
     power_right = std::min(std::abs(power_right), 1.0f);

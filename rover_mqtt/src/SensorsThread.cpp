@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 SensorsThread::SensorsThread(RobotSensorValues &sensor_values, UltraBorg *ultra_borg)
-: SelectLoopThread("sensors-thread", 100),
+: SelectLoopThread("sensors-thread", 200),
   m_sensor_values(sensor_values),
   m_imu_settings(),
   m_imu(RTIMU::createIMU(&m_imu_settings)),
