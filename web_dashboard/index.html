@@ -21,9 +21,9 @@
 		</form>
 
 
-		<div id="sensors">
+		<div id="sensors" ng-controller="RoverSensorsController" class="mono">
 			<h3>Sensors</h3>
-			<ul ng-controller="RoverSensorsController" class="mono" ng-cloak>
+			<ul ng-cloak ng-show="mqtt.is_connected()">
 				<li>
 					Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
 							 &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
@@ -44,12 +44,21 @@
 				</li>
 			</ul>
 		</div>
-		<div id="controls">
+		<div id="controls" ng-controller="RoverControlsController" class="mono">
 			<h3>Controls</h3>
-			<ul ng-controller="RoverControlsController" class="mono">
-				<li>Left: <input min="-100" max="100" type="range" ng-model="controls.left" ng-change="onChange()"/> {{ controls.left }}</li>
-				<li>Right: <input min="-100" max="100" type="range" ng-model="controls.right" ng-change="onChange()" /> {{ controls.right }}</li>
-			</ul>
+            <div ng-cloak ng-show="mqtt.is_connected()">
+            <table>
+                <tr>
+                    <td>Left</td>
+                    <td><input min="-100" max="100" type="range" ng-model="controls.left" ng-change="onChange()"/> {{ controls.left }}</td>
+                </tr>
+                <tr>
+                    <td>Right</td>
+                    <td><input min="-100" max="100" type="range" ng-model="controls.right" ng-change="onChange()" /> {{ controls.right }}</td>
+                </tr>
+            </table>
+            <button ng-click="motorStopAll()"> Stop! </button>
+        </div>
 		</div>
 	</div>
 </body>

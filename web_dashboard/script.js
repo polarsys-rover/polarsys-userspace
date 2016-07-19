@@ -76,6 +76,8 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
         sonar: null,
     };
 
+    $scope.mqtt = mqtt;
+
     var onMessage = function (message) {
 
         var decodedMessage = $scope.messageDecoder.decode(message.payloadBytes);
@@ -135,7 +137,20 @@ roverDashboardApp.controller('RoverControlsController', ['$scope', 'mqtt', funct
         right: 0,
     };
 
+    $scope.mqtt = mqtt;
+
     $scope.messageEncoder = null;
+    var publishControls = function() {
+        if ($scope.messageEncoder != null) {
+            var data = {
+              left: parseInt($scope.controls.left),
+              right: parseInt($scope.controls.right),
+            };
+            var byteBuffer = $scope.messageEncoder.encode(data);
+
+            mqtt.publish('/polarsys-rover/controls', byteBuffer.buffer);
+        }
+    }
 
     create_protobuf_decoder(
         'controls.proto', 'PolarsysRover.RoverControls',
@@ -149,16 +164,15 @@ roverDashboardApp.controller('RoverControlsController', ['$scope', 'mqtt', funct
     );
 
     $scope.onChange = function () {
-        if ($scope.messageEncoder != null) {
-            var data = {
-              left: parseInt($scope.controls.left),
-              right: parseInt($scope.controls.right),
-            };
-            var byteBuffer = $scope.messageEncoder.encode(data);
-
-            mqtt.publish('/polarsys-rover/controls', byteBuffer.buffer);
-        }
+        publishControls();
     };
+
+    $scope.motorStopAll = function() {
+        $scope.controls.left = 0;
+        $scope.controls.right = 0;
+        publishControls();
+    }
+
 }]);
 
 roverDashboardApp.filter('monoFloat', function() {
