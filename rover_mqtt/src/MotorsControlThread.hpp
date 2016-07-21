@@ -4,11 +4,10 @@
 #include "SelectLoopThread.hpp"
 
 #include "MqttInterface.hpp"
-#include "PicoBorgRev.hpp"
-
 #include <mutex>
 
 #include "controls.pb.h"
+#include "PicoBorgRevReal.hpp"
 
 class MotorsControlThread: public SelectLoopThread {
 public:

@@ -15,8 +15,8 @@ bin_PROGRAMS = rover_mqtt imu motors
 
 motors_SOURCES = \
     motors.cpp \
-    PicoBorgRev.hpp \
-    PicoBorgRev.cpp
+    PicoBorgRevReal.hpp \
+    PicoBorgRevReal.cpp
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
@@ -32,12 +32,14 @@ rover_mqtt_SOURCES = \
 	MotorsControlThread.hpp \
 	MqttInterface.cpp \
 	MqttInterface.hpp \
-	PicoBorgRev.cpp \
 	PicoBorgRev.hpp \
+	PicoBorgRevReal.cpp \
+	PicoBorgRevReal.hpp \
 	SelectLoopThread.cpp \
 	SelectLoopThread.hpp \
-	UltraBorg.cpp \
-	UltraBorg.hpp
+	UltraBorg.hpp \
+	UltraBorgReal.cpp \
+	UltraBorgReal.hpp
 
 noinst_LIBRARIES = libproto.a
 libproto_a_SOURCES = \

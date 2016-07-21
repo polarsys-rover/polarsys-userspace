@@ -1,29 +1,14 @@
-#ifndef PicoBorgRev_HPP_
-#define PicoBorgRev_HPP_
-
-#include <string>
+#ifndef PICOBORGREV_HPP_
+#define PICOBORGREV_HPP_
 
 class PicoBorgRev {
 public:
-	PicoBorgRev(std::string i2c_dev, unsigned char address);
-	virtual ~PicoBorgRev();
+    virtual ~PicoBorgRev() {}
 
-	bool init(void);
-	void fini(void);
+    virtual bool init(void) = 0;
+    virtual void fini(void) = 0;
 
-	bool SetMotors(float power_left, float power_right);
-
-
-
-private:
-	std::string m_i2c_dev;
-	unsigned char m_address;
-	int m_fd;
-
-	PicoBorgRev(const PicoBorgRev &) = delete;
-	void operator=(const PicoBorgRev &) = delete;
-
-	int ReadWithCheck(uint8_t command, uint8_t *buf);
+    virtual bool SetMotors(float power_left, float power_right) = 0;
 };
 
-#endif /* SRC_PicoBorgRev_HPP_ */
+#endif /* PICOBORGREV_HPP_ */

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <unistd.h>
 
-SensorsThread::SensorsThread(RobotSensorValues &sensor_values, UltraBorg *ultra_borg)
+SensorsThread::SensorsThread(RobotSensorValues &sensor_values, UltraBorg &ultra_borg)
 : SelectLoopThread("sensors-thread", 200),
   m_sensor_values(sensor_values),
   m_imu_settings(),
@@ -47,12 +47,10 @@ void SensorsThread::timeout(void) {
     /* Sonar, the object is initialized to "invalid" by default. */
     SonarDistance sonar_distance;
 
-    if (m_ultra_borg != nullptr) {
-	uint16_t sonar_distance_val = m_ultra_borg->GetDistance1();
-	if (sonar_distance_val != 0 && sonar_distance_val != 0xffff) {
-	    sonar_distance.sonar_distance = sonar_distance_val;
-	    sonar_distance.sonar_distance_valid = true;
-	}
+    uint16_t sonar_distance_val = m_ultra_borg.GetDistance1();
+    if (sonar_distance_val != 0 && sonar_distance_val != 0xffff) {
+	sonar_distance.sonar_distance = sonar_distance_val;
+	sonar_distance.sonar_distance_valid = true;
     }
 
     m_sensor_values.setSonarDistance(sonar_distance);

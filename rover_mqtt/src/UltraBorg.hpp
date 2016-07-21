@@ -1,29 +1,14 @@
-#ifndef ULTRABORG_HPP_
-#define ULTRABORG_HPP_
-
-#include <string>
+#ifndef SRC_ULTRABORG_HPP_
+#define SRC_ULTRABORG_HPP_
 
 class UltraBorg {
 public:
-	UltraBorg(std::string i2c_dev, unsigned char address);
-	virtual ~UltraBorg();
+    virtual ~UltraBorg() {};
 
-	bool init(void);
-	void fini(void);
+    virtual bool init(void) = 0;
+    virtual void fini(void) = 0;
 
-	uint16_t GetDistance1(void);
-
-
-
-private:
-	std::string m_i2c_dev;
-	unsigned char m_address;
-	int m_fd;
-
-	UltraBorg(const UltraBorg &) = delete;
-	void operator=(const UltraBorg &) = delete;
-
-	int ReadWithCheck(uint8_t command, uint8_t *buf);
+    virtual uint16_t GetDistance1(void) = 0;
 };
 
 #endif /* SRC_ULTRABORG_HPP_ */

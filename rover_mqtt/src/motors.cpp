@@ -1,5 +1,4 @@
-#include "PicoBorgRev.hpp"
-
+#include <PicoBorgRevReal.hpp>
 #include <iostream>
 #include <unistd.h>
 #include <chrono>
@@ -16,7 +15,7 @@ float computePower(float t_s, float start, float end, float total_duration_s) {
 
 
 int main() {
-    PicoBorgRev pbr("/dev/i2c-1", 0x44);
+    PicoBorgRevReal pbr("/dev/i2c-1", 0x44);
     if (pbr.init()) {
 	std::cout << "I am initialized" << std::endl;
     } else {

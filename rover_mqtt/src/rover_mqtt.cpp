@@ -13,8 +13,8 @@
 #include <SensorsThreadSimulated.hpp>
 #include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
-#include "PicoBorgRev.hpp"
 #include "controls.pb.h"
+#include "PicoBorgRevReal.hpp"
 
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
@@ -45,23 +45,38 @@ static void sigIntHandler(int signum)
 
 }*/
 
+static const int simulate_ultra_borg = 0;
+static const int simulate_pico_borg_rev = 0;
+
 int main(int argc, char *argv[])
 {
+    std::unique_ptr<UltraBorg> ultra_borg_p;
+    std::unique_ptr<PicoBorgRev> pico_borg_rev_p;
+
     mosqpp::lib_init();
 
     MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
     mqtt_interface.start();
     //mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
 
-    UltraBorg ultra_borg(I2C_DEV, I2C_ULTRA_BORG_ADDR);
-    UltraBorg *ultra_borg_p = &ultra_borg;
-    if (!ultra_borg.init()) {
-	std::cerr << "Could not initialize UltraBorg" << std::endl;
-	ultra_borg_p = nullptr;
+    if (simulate_ultra_borg) {
+	// TODO
+    } else {
+	ultra_borg_p.reset(new UltraBorgReal(I2C_DEV, I2C_ULTRA_BORG_ADDR));
     }
 
-    PicoBorgRev pico_borg_rev(I2C_DEV, I2C_PICO_BORG_REF_ADDR);
-    if (!pico_borg_rev.init()) {
+    if (simulate_pico_borg_rev) {
+	// TODO
+    } else {
+	pico_borg_rev_p.reset(new PicoBorgRevReal(I2C_DEV, I2C_PICO_BORG_REF_ADDR));
+    }
+
+    if (!ultra_borg_p->init()) {
+	std::cerr << "Could not initialize UltraBorg" << std::endl;
+	return 1;
+    }
+
+    if (!pico_borg_rev_p->init()) {
 	std::cerr << "Could not initialize PicoBorgRev" << std::endl;
 	return 1;
     }
@@ -69,21 +84,16 @@ int main(int argc, char *argv[])
     /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
 
-    std::unique_ptr<SelectLoopThread> sensors_callback = nullptr;
-    int simulated = 0;
-    if (simulated) {
-	/* Thread responsible for faking read sensor values. */
-	sensors_callback.reset(new SensorsThreadSimulated(sensor_values));
-    } else {
-	sensors_callback.reset(new SensorsThread(sensor_values, ultra_borg_p));
-    }
-    std::thread sensors_thread(std::ref(*sensors_callback));
+    /* Thread continuously reading the sensor values. */
+    SensorsThread sensors_callback(sensor_values, *ultra_borg_p);
+    std::thread sensors_thread(std::ref(sensors_callback));
 
-    /* Thread responsible for publishing sensor values every second. */
+    /* Thread responsible for publishing sensor values periodically. */
     SensorsPublishThread mqtt_callback(sensor_values, mqtt_interface);
     std::thread mqtt_thread(std::ref(mqtt_callback));
 
-    MotorsControlThread motors_control_callback(pico_borg_rev, mqtt_interface);
+    /* Thread controlling the motors. */
+    MotorsControlThread motors_control_callback(*pico_borg_rev_p, mqtt_interface);
     std::thread motors_control_thread(std::ref(motors_control_callback));
 
     /* Install ctrl-C signal handler. */
@@ -95,7 +105,7 @@ int main(int argc, char *argv[])
 
     std::cout << "main thread unblocked, trying to quit." << std::endl;
 
-    sensors_callback->please_stop();
+    sensors_callback.please_stop();
     mqtt_callback.please_stop();
 
     sensors_thread.join();
