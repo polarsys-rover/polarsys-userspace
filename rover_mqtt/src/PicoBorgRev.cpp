@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 // Defines stolen from the PicoBorgRev PIC code
 #define I2C_ID_SERVO_USM		(0x36)
@@ -97,8 +98,8 @@ bool PicoBorgRev::SetMotors(float power_left, float power_right) {
     const uint8_t command_left = power_left > 0 ? COMMAND_SET_A_REV : COMMAND_SET_A_FWD;
     const uint8_t command_right = power_right < 0 ? COMMAND_SET_B_REV : COMMAND_SET_B_FWD;
 
-    power_left = std::min(std::abs(power_left), 1.0f);
-    power_right = std::min(std::abs(power_right), 1.0f);
+    power_left = std::min(std::fabs(power_left), 1.0f);
+    power_right = std::min(std::fabs(power_right), 1.0f);
 
     const uint8_t max_power = 200;
 
