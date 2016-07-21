@@ -14,7 +14,9 @@
 #include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
 #include "controls.pb.h"
+
 #include "PicoBorgRevReal.hpp"
+#include "PicoBorgRevSim.hpp"
 
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
@@ -46,7 +48,7 @@ static void sigIntHandler(int signum)
 }*/
 
 static const int simulate_ultra_borg = 0;
-static const int simulate_pico_borg_rev = 0;
+static const int simulate_pico_borg_rev = 1;
 
 int main(int argc, char *argv[])
 {
@@ -66,7 +68,7 @@ int main(int argc, char *argv[])
     }
 
     if (simulate_pico_borg_rev) {
-	// TODO
+	pico_borg_rev_p.reset(new PicoBorgRevSim());
     } else {
 	pico_borg_rev_p.reset(new PicoBorgRevReal(I2C_DEV, I2C_PICO_BORG_REF_ADDR));
     }
