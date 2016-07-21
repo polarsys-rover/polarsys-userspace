@@ -1,6 +1,6 @@
 #include "PicoBorgRev.hpp"
 
-#include <linux/i2c-dev-user.h>
+#include "i2c-dev.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
