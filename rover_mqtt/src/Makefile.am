@@ -58,6 +58,7 @@ rover_mqtt_CXXFLAGS = \
 	$(rover_mqtt_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(protobuf_CFLAGS) \
+	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	-Wall -Werror -Weffc++
 
 rover_mqtt_LDADD = \

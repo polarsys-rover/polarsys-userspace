@@ -7,6 +7,8 @@
 
 #include <csignal>
 
+#include <boost/program_options.hpp>
+
 #include <mosquittopp.h>
 #include <MotorsControlThread.hpp>
 #include <SensorsPublishThread.hpp>
@@ -47,13 +49,52 @@ static void sigIntHandler(int signum)
 
 }*/
 
-static const int simulate_ultra_borg = 0;
-static const int simulate_pico_borg_rev = 1;
+struct options {
+    options()
+    : simulate_ultra_borg(0),
+      simulate_pico_borg_rev(0)
+    {
+    }
+
+    int simulate_ultra_borg;
+    int simulate_pico_borg_rev;
+};
+
+static void parse_args(int argc, char *argv[], options &opts) {
+    namespace po = boost::program_options;
+
+    po::options_description desc;
+    desc.add_options()
+	    ("simulate-ultra-borg", "Simulate the UltraBorg module")
+	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module");
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+
+    if (vm.count("simulate-ultra-borg")) {
+	opts.simulate_ultra_borg = 1;
+    }
+
+    if (vm.count("simulate-pico-borg-rev")) {
+	opts.simulate_pico_borg_rev = 1;
+    }
+}
 
 int main(int argc, char *argv[])
 {
     std::unique_ptr<UltraBorg> ultra_borg_p;
     std::unique_ptr<PicoBorgRev> pico_borg_rev_p;
+
+    options opts;
+
+    try {
+	parse_args(argc, argv, opts);
+    } catch (boost::program_options::unknown_option &ex) {
+	std::cerr << ex.what() << std::endl;
+	return 1;
+    }
+
 
     mosqpp::lib_init();
 
@@ -61,13 +102,13 @@ int main(int argc, char *argv[])
     mqtt_interface.start();
     //mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
 
-    if (simulate_ultra_borg) {
+    if (opts.simulate_ultra_borg) {
 	// TODO
     } else {
 	ultra_borg_p.reset(new UltraBorgReal(I2C_DEV, I2C_ULTRA_BORG_ADDR));
     }
 
-    if (simulate_pico_borg_rev) {
+    if (opts.simulate_pico_borg_rev) {
 	pico_borg_rev_p.reset(new PicoBorgRevSim());
     } else {
 	pico_borg_rev_p.reset(new PicoBorgRevReal(I2C_DEV, I2C_PICO_BORG_REF_ADDR));
