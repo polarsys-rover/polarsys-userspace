@@ -39,16 +39,6 @@ static void sigIntHandler(int signum)
 #define I2C_ULTRA_BORG_ADDR 0x36
 #define I2C_PICO_BORG_REF_ADDR 0x44
 
-// FIXME: This is just a proof of concept, it should obviously not be there.
-/*void i_got_a_message(std::string payload) {
-    std::cout << "I got a message of length " << payload.size()  << " " << payload.length() << std::endl;
-    PolarsysRover::RoverControls controls;
-    controls.ParseFromString(payload);
-
-    std::cout << "Message = " << controls.DebugString() << std::endl;
-
-}*/
-
 struct options {
     options()
     : simulate_ultra_borg(0),
@@ -100,7 +90,6 @@ int main(int argc, char *argv[])
 
     MqttInterface mqtt_interface(MQTT_BROKER_HOST, MQTT_BROKER_PORT);
     mqtt_interface.start();
-    //mqtt_interface.subscribe("/polarsys-rover/controls", i_got_a_message);
 
     if (opts.simulate_ultra_borg) {
 	// TODO
