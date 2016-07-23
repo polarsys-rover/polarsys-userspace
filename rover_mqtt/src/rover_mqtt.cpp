@@ -50,17 +50,23 @@ struct options {
     int simulate_pico_borg_rev;
 };
 
-static void parse_args(int argc, char *argv[], options &opts) {
+static int parse_args(int argc, char *argv[], options &opts) {
     namespace po = boost::program_options;
 
-    po::options_description desc;
+    po::options_description desc("rover_mqtt");
     desc.add_options()
+	    ("help", "Show this help")
 	    ("simulate-ultra-borg", "Simulate the UltraBorg module")
 	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
+
+    if (vm.count("help")) {
+	std::cout << desc << std::endl;
+	return 1;
+    }
 
     if (vm.count("simulate-ultra-borg")) {
 	opts.simulate_ultra_borg = 1;
@@ -69,6 +75,8 @@ static void parse_args(int argc, char *argv[], options &opts) {
     if (vm.count("simulate-pico-borg-rev")) {
 	opts.simulate_pico_borg_rev = 1;
     }
+
+    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -79,7 +87,9 @@ int main(int argc, char *argv[])
     options opts;
 
     try {
-	parse_args(argc, argv, opts);
+	if (parse_args(argc, argv, opts)) {
+	    return 0;
+	}
     } catch (boost::program_options::unknown_option &ex) {
 	std::cerr << ex.what() << std::endl;
 	return 1;
