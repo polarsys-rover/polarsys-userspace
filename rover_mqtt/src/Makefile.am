@@ -41,7 +41,9 @@ rover_mqtt_SOURCES = \
 	SelectLoopThread.hpp \
 	UltraBorg.hpp \
 	UltraBorgReal.cpp \
-	UltraBorgReal.hpp
+	UltraBorgReal.hpp \
+	UltraBorgSim.cpp \
+	UltraBorgSim.hpp
 
 noinst_LIBRARIES = libproto.a
 libproto_a_SOURCES = \

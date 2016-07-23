@@ -19,6 +19,7 @@
 
 #include "PicoBorgRevReal.hpp"
 #include "PicoBorgRevSim.hpp"
+#include "UltraBorgSim.hpp"
 
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
@@ -102,7 +103,7 @@ int main(int argc, char *argv[])
     mqtt_interface.start();
 
     if (opts.simulate_ultra_borg) {
-	// TODO
+	ultra_borg_p.reset(new UltraBorgSim());
     } else {
 	ultra_borg_p.reset(new UltraBorgReal(I2C_DEV, I2C_ULTRA_BORG_ADDR));
     }
