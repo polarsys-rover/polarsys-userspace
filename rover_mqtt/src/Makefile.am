@@ -45,30 +45,36 @@ rover_mqtt_SOURCES = \
 	UltraBorgSim.cpp \
 	UltraBorgSim.hpp
 
-noinst_LIBRARIES = libproto.a
-libproto_a_SOURCES = \
+noinst_LTLIBRARIES = libproto.la
+libproto_la_SOURCES = \
 	sensors.pb.cc \
 	sensors.pb.h \
 	controls.pb.cc \
 	controls.pb.h
 
-libproto_a_CFLAGS =  = \
+libproto_la_CFLAGS = \
 	$(protobuf_CFLAGS) \
 	-Wall -Werror
+
+rover_mqtt_CPPFLAGS = \
+	$(BOOST_CPPFLAGS)
 
 rover_mqtt_CXXFLAGS = \
 	$(rover_mqtt_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(protobuf_CFLAGS) \
-	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	-Wall -Werror -Weffc++
+
+rover_mqtt_LDFLAGS = \
+	$(BOOST_PROGRAM_OPTIONS_LDFLAGS)
 
 rover_mqtt_LDADD = \
 	$(rover_mqtt_LIBS) \
 	$(PTHREAD_LIBS) \
 	$(protobuf_LIBS) \
+	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	-lRTIMULib \
-	libproto.a
+	libproto.la
 
 imu_SOURCES = \
 	imu.cpp

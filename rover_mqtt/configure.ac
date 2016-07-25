@@ -40,8 +40,8 @@ PKG_CHECK_MODULES(protobuf, protobuf)
 AC_CHECK_PROG([PROTOC], [protoc], [protoc])
 AS_IF([test "x${PROTOC}" == "x"], [AC_MSG_ERROR([protobuf compiler "protoc" not found.])])
 
-AX_BOOST_BASE(,, [AC_MSG_ERROR([Boost is required but was not found.])])
-AX_BOOST_PROGRAM_OPTIONS
+BOOST_REQUIRE
+BOOST_PROGRAM_OPTIONS
 
 # Checks for library functions.
 #AC_CHECK_FUNCS([memset])
