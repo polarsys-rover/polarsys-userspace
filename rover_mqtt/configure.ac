@@ -34,6 +34,10 @@ AX_CXX_CHECK_LIB(mosquittopp,
 		 [mosqpp::lib_init(void)],
 		 ,
 		 AC_MSG_ERROR([mosquittopp not found.]))
+AC_CHECK_HEADER([RTIMULib.h],
+	        [],
+		AC_MSG_ERROR([RTIMULib.h is required but was not found.])
+	       )
 
 PKG_CHECK_MODULES(protobuf, protobuf)
 
