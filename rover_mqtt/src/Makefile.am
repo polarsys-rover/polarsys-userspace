@@ -37,6 +37,11 @@ rover_mqtt_SOURCES = \
 	PicoBorgRevReal.hpp \
 	PicoBorgRevSim.cpp \
 	PicoBorgRevSim.hpp \
+	PiSenseHat.hpp \
+	PiSenseHatReal.cpp \
+	PiSenseHatReal.hpp \
+	PiSenseHatSim.cpp \
+	PiSenseHatSim.hpp \
 	SelectLoopThread.cpp \
 	SelectLoopThread.hpp \
 	UltraBorg.hpp \

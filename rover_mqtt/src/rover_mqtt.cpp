@@ -19,7 +19,12 @@
 
 #include "PicoBorgRevReal.hpp"
 #include "PicoBorgRevSim.hpp"
+
+#include "UltraBorgReal.hpp"
 #include "UltraBorgSim.hpp"
+
+#include "PiSenseHatReal.hpp"
+#include "PiSenseHatSim.hpp"
 
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
@@ -43,12 +48,18 @@ static void sigIntHandler(int signum)
 struct options {
     options()
     : simulate_ultra_borg(0),
-      simulate_pico_borg_rev(0)
+      simulate_pico_borg_rev(0),
+      simulate_pi_sense_hat(0)
     {
+    }
+
+    void do_stuff(int a, char c, std::string b) {
+
     }
 
     int simulate_ultra_borg;
     int simulate_pico_borg_rev;
+    int simulate_pi_sense_hat;
 };
 
 static int parse_args(int argc, char *argv[], options &opts) {
@@ -58,7 +69,8 @@ static int parse_args(int argc, char *argv[], options &opts) {
     desc.add_options()
 	    ("help", "Show this help")
 	    ("simulate-ultra-borg", "Simulate the UltraBorg module")
-	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module");
+	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module")
+	    ("simulate-pi-sense-hat", "Simulate the Raspberry Pi Sense Hat module");
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -77,6 +89,10 @@ static int parse_args(int argc, char *argv[], options &opts) {
 	opts.simulate_pico_borg_rev = 1;
     }
 
+    if (vm.count("simulate-pi-sense-hat")) {
+	opts.simulate_pi_sense_hat = 1;
+    }
+
     return 0;
 }
 
@@ -84,6 +100,7 @@ int main(int argc, char *argv[])
 {
     std::unique_ptr<UltraBorg> ultra_borg_p;
     std::unique_ptr<PicoBorgRev> pico_borg_rev_p;
+    std::unique_ptr<PiSenseHat> pi_sense_hat_p;
 
     options opts;
 
@@ -95,7 +112,6 @@ int main(int argc, char *argv[])
 	std::cerr << ex.what() << std::endl;
 	return 1;
     }
-
 
     mosqpp::lib_init();
 
@@ -114,6 +130,12 @@ int main(int argc, char *argv[])
 	pico_borg_rev_p.reset(new PicoBorgRevReal(I2C_DEV, I2C_PICO_BORG_REF_ADDR));
     }
 
+    if (opts.simulate_pi_sense_hat) {
+	pi_sense_hat_p.reset(new PiSenseHatSim());
+    } else {
+	pi_sense_hat_p.reset(new PiSenseHatReal());
+    }
+
     if (!ultra_borg_p->init()) {
 	std::cerr << "Could not initialize UltraBorg" << std::endl;
 	return 1;
@@ -124,11 +146,16 @@ int main(int argc, char *argv[])
 	return 1;
     }
 
+    if (!pi_sense_hat_p->init()) {
+	std::cerr << "Could not initialize PiSenseHat" << std::endl;
+	return 1;
+    }
+
     /* Store for the most recently acquired sensor values. */
     RobotSensorValues sensor_values;
 
     /* Thread continuously reading the sensor values. */
-    SensorsThread sensors_callback(sensor_values, *ultra_borg_p);
+    SensorsThread sensors_callback(sensor_values, *ultra_borg_p, *pi_sense_hat_p);
     std::thread sensors_thread(std::ref(sensors_callback));
 
     /* Thread responsible for publishing sensor values periodically. */
