@@ -36,7 +36,7 @@ void MqttInterface::on_connect(int rc)
     std::cout << "MQTT connected!" << std::endl;
 }
 
-void MqttInterface::on_disconnect()
+void MqttInterface::on_disconnect(int rc)
 {
     std::cout << "MQTT disconnected!" << std::endl;
 }

@@ -20,7 +20,7 @@ public:
 
 private:
     virtual void on_connect(int rc);
-    virtual void on_disconnect();
+    virtual void on_disconnect(int rc);
     virtual void on_message(const mosquitto_message *message);
 
     std::string m_broker_host;
