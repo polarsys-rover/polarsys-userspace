@@ -20,6 +20,8 @@ public:
     /* Entry point for the thread execution (meant to be called by std::thread). */
     virtual void operator()(void) final;
 
+    const std::string &getName(void);
+
 protected:
     /*  */
     typedef std::function<void()> CallbackType;

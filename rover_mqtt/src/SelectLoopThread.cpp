@@ -89,3 +89,8 @@ void SelectLoopThread::operator ()(void) {
 
     std::cout << "Thread " << m_name << " shutting down." << std::endl;
 }
+
+const std::string &SelectLoopThread::getName(void)
+{
+    return this->m_name;
+}

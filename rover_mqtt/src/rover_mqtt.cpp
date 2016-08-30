@@ -157,14 +157,20 @@ int main(int argc, char *argv[])
     /* Thread continuously reading the sensor values. */
     SensorsThread sensors_callback(sensor_values, *ultra_borg_p, *pi_sense_hat_p);
     std::thread sensors_thread(std::ref(sensors_callback));
+    pthread_setname_np(sensors_thread.native_handle(),
+		       sensors_callback.getName().c_str());
 
     /* Thread responsible for publishing sensor values periodically. */
     SensorsPublishThread mqtt_callback(sensor_values, mqtt_interface);
     std::thread mqtt_thread(std::ref(mqtt_callback));
+    pthread_setname_np(mqtt_thread.native_handle(),
+		       mqtt_callback.getName().c_str());
 
     /* Thread controlling the motors. */
     MotorsControlThread motors_control_callback(*pico_borg_rev_p, mqtt_interface);
     std::thread motors_control_thread(std::ref(motors_control_callback));
+    pthread_setname_np(motors_control_thread.native_handle(),
+		       motors_control_callback.getName().c_str());
 
     /* Install ctrl-C signal handler. */
     signal(SIGINT, sigIntHandler);
