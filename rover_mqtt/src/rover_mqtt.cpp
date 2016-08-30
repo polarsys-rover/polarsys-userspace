@@ -150,9 +150,11 @@ int main(int argc, char *argv[])
 
     sensors_callback.please_stop();
     mqtt_callback.please_stop();
+    motors_control_callback.please_stop();
 
     sensors_thread.join();
     mqtt_thread.join();
+    motors_control_thread.join();
 
     mqtt_interface.stop();
 
