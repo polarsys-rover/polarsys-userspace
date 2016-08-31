@@ -30,6 +30,8 @@ void MotorsControlThread::on_message(std::string payload)
 
     m_target_power_left = m_protobuf_controls.left() / 100.0f;
     m_target_power_right = m_protobuf_controls.right() / 100.0f;
+
+    std::cout << "Setting motors to (" << m_target_power_left << ", " << m_target_power_right << ")" << std::endl;
 }
 
 void MotorsControlThread::timeout(void)
