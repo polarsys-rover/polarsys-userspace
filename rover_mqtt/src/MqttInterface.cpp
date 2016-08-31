@@ -10,6 +10,10 @@ MqttInterface::MqttInterface(std::string broker_host, int broker_port)
 {
 }
 
+MqttInterface::~MqttInterface()
+{
+}
+
 void MqttInterface::start(void)
 {
     mosqpp::mosquittopp::reconnect_delay_set(3, 30, true);

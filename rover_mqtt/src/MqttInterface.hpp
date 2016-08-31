@@ -9,6 +9,7 @@
 class MqttInterface : private mosqpp::mosquittopp {
 public:
     MqttInterface(std::string broker_host, int broker_port);
+    virtual ~MqttInterface();
 
     void start();
     void stop();
