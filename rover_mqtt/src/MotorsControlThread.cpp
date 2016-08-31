@@ -24,6 +24,7 @@ void MotorsControlThread::on_message(std::string payload)
 {
     if (!m_protobuf_controls.ParseFromString(payload)) {
 	std::cerr << "MotorsControlThread::on_message: failed to parse protobuf." << std::endl;
+	return;
     }
 
     std::lock_guard<std::mutex> lock(m_mutex);
