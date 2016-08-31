@@ -148,6 +148,13 @@ roverDashboardApp.controller('RoverControlsController', ['$scope', 'mqtt', funct
             };
             var byteBuffer = $scope.messageEncoder.encode(data);
 
+            /* This shouldn't be necessary, but it seems like the mqtt library
+             * doesn't handle the buffer properly.  It sends a message with a
+             * length equal to the capacity of the buffer, instead of equal to
+             * its limit (the actual content).  Compacting the buffer reduces
+             * the capacity to the limit, which fixes the problem.  */
+            byteBuffer.compact();
+
             mqtt.publish('/polarsys-rover/controls', byteBuffer.buffer);
         }
     }
