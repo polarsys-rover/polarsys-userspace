@@ -182,6 +182,22 @@ roverDashboardApp.controller('RoverControlsController', ['$scope', 'mqtt', funct
 
 }]);
 
+roverDashboardApp.controller('RoverFrontCameraController', ['$scope', 'mqtt', function ($scope, $mqtt) {
+    $scope.imageUrl = '';
+    $scope.mqtt = $mqtt;
+
+    var onMessage = function (message) {
+        var blob = new Blob([message.payloadBytes], {type: 'image/jpeg'});
+        var url = window.URL.createObjectURL(blob);
+
+        $scope.$apply(function() {
+            $scope.imageUrl = url;
+        });
+    }
+
+    $mqtt.subscribe('/polarsys-rover/front-camera', onMessage);
+}]);
+
 roverDashboardApp.filter('monoFloat', function() {
     return function(input) {
         if (input == null) {
@@ -197,8 +213,6 @@ roverDashboardApp.filter('monoFloat', function() {
         return s;
     }
 });
-
-
 
 roverDashboardApp.factory('mqtt', function ($rootScope, $timeout) {
 	var service = {};

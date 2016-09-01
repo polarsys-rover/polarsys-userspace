@@ -60,6 +60,11 @@
         <button ng-click="motorStopAll()"> Stop! </button>
       </div>
     </div>
+
+    <div id="front-camera" ng-controller="RoverFrontCameraController" class="mono">
+      <h3>Front Camera</h3>
+      <img id="front-camera-image" ng-src="{{ imageUrl }}"  ng-cloak ng-show="mqtt.is_connected()" />
+    </div>
   </div>
 </body>
 </html>
