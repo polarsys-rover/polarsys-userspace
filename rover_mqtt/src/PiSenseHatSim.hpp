@@ -12,6 +12,9 @@ public:
 	void fini(void);
 
 	RTIMU_DATA ReadValues(void);
+
+private:
+	uint64_t m_start_time;
 };
 
 #endif /* PISENSEHATSIM_HPP_ */

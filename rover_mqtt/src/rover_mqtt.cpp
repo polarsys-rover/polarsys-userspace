@@ -12,7 +12,6 @@
 #include <mosquittopp.h>
 #include <MotorsControlThread.hpp>
 #include <SensorsPublishThread.hpp>
-#include <SensorsThreadSimulated.hpp>
 #include <SensorsThread.hpp>
 #include "MqttInterface.hpp"
 #include "controls.pb.h"
