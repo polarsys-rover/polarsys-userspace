@@ -1,65 +1,65 @@
 <html ng-app="roverDashboardApp">
 <head>
-    <script src="jquery-3.0.0.min.js"></script>
-    <script src="bytebuffer.js"></script>
-    <script src="protobuf.js"></script>
-    <script src="mqttws31.js"></script>
-    <script src="angular.min.js"></script>
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="main.css"/>
+  <script src="jquery-3.0.0.min.js"></script>
+  <script src="bytebuffer.js"></script>
+  <script src="protobuf.js"></script>
+  <script src="mqttws31.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="main.css"/>
 </head>
 <body>
-	<div ng-controller="MainPageController" ng-cloak>
-		<form ng-submit="connect()" ng-show="!mqttService.is_connected()">
-			<input type="text" ng-model="host" placeholder="host">
-			<input type="number" min="1" max="65535" ng-model="port" placeholder="port">
-			<input type="submit" value="Connect!">
-		</form>
+  <div ng-controller="MainPageController" ng-cloak>
+    <form ng-submit="connect()" ng-show="!mqttService.is_connected()">
+      <input type="text" ng-model="host" placeholder="host">
+      <input type="number" min="1" max="65535" ng-model="port" placeholder="port">
+      <input type="submit" value="Connect!">
+    </form>
 
-		<form ng-submit="disconnect()" ng-show="mqttService.is_connected()">
-			<input type="submit" value="Disconnect!">
-		</form>
+    <form ng-submit="disconnect()" ng-show="mqttService.is_connected()">
+      <input type="submit" value="Disconnect!">
+    </form>
 
+    <div id="sensors" ng-controller="RoverSensorsController" class="mono">
+      <h3>Sensors</h3>
+      <ul ng-cloak ng-show="mqtt.is_connected()">
+        <li>
+          Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
+               &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
+               &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
+        </li>
+        <li>
+          Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
+           &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
+           &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
+        </li>
+        <li>
+          Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
+            &nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
+            &nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
+        </li>
+        <li>
+          Sonar: {{ sensors.sonar || '?' }}
+        </li>
+      </ul>
+    </div>
 
-		<div id="sensors" ng-controller="RoverSensorsController" class="mono">
-			<h3>Sensors</h3>
-			<ul ng-cloak ng-show="mqtt.is_connected()">
-				<li>
-					Acceleration: ({{ (sensors.accel.x | monoFloat) || '?' }},
-							 &nbsp;{{ (sensors.accel.y | monoFloat) || '?' }},
-							 &nbsp;{{ (sensors.accel.z | monoFloat) || '?' }})
-				</li>
-				<li>
-					Gyro: ({{ (sensors.gyro.x | monoFloat) || '?' }},
-					 &nbsp;{{ (sensors.gyro.y | monoFloat) || '?' }},
-					 &nbsp;{{ (sensors.gyro.z | monoFloat) || '?' }})
-				</li>
-				<li>
-					Compass: ({{ (sensors.compass.x | monoFloat) || '?' }},
-						&nbsp;{{ (sensors.compass.y | monoFloat) || '?' }},
-						&nbsp;{{ (sensors.compass.z | monoFloat) || '?' }})
-				</li>
-				<li>
-					Sonar: {{ sensors.sonar || '?' }}
-				</li>
-			</ul>
-		</div>
-		<div id="controls" ng-controller="RoverControlsController" class="mono">
-			<h3>Controls</h3>
-            <div ng-cloak ng-show="mqtt.is_connected()">
-            <table>
-                <tr>
-                    <td>Left</td>
-                    <td><input min="-100" max="100" type="range" ng-model="controls.left" ng-change="onChange()"/> {{ controls.left }}</td>
-                </tr>
-                <tr>
-                    <td>Right</td>
-                    <td><input min="-100" max="100" type="range" ng-model="controls.right" ng-change="onChange()" /> {{ controls.right }}</td>
-                </tr>
-            </table>
-            <button ng-click="motorStopAll()"> Stop! </button>
-        </div>
-		</div>
-	</div>
+    <div id="controls" ng-controller="RoverControlsController" class="mono">
+      <h3>Controls</h3>
+      <div ng-cloak ng-show="mqtt.is_connected()">
+        <table>
+          <tr>
+              <td>Left</td>
+              <td><input min="-100" max="100" type="range" ng-model="controls.left" ng-change="onChange()"/> {{ controls.left }}</td>
+          </tr>
+          <tr>
+              <td>Right</td>
+              <td><input min="-100" max="100" type="range" ng-model="controls.right" ng-change="onChange()" /> {{ controls.right }}</td>
+          </tr>
+        </table>
+        <button ng-click="motorStopAll()"> Stop! </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
