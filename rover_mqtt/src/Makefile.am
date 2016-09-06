@@ -2,6 +2,8 @@
 %.pb.cc %.pb.h: %.proto
 	$(PROTOC) --proto_path=$(srcdir) --cpp_out=$(builddir) $^
 
+tracepoints.h tracepoints.c: tracepoints.tp
+	lttng-gen-tp tracepoints.tp
 
 dist_noinst_DATA = sensors.proto controls.proto
 
@@ -9,7 +11,9 @@ BUILT_SOURCES = \
 	sensors.pb.h \
 	sensors.pb.cc \
 	controls.pb.h \
-	controls.pb.cc
+	controls.pb.cc \
+	tracepoints.h \
+	tracepoints.c
 
 bin_PROGRAMS = rover_mqtt imu motors
 
@@ -42,6 +46,8 @@ rover_mqtt_SOURCES = \
 	PiSenseHatSim.hpp \
 	SelectLoopThread.cpp \
 	SelectLoopThread.hpp \
+	tracepoints.c \
+	tracepoints.h \
 	UltraBorg.hpp \
 	UltraBorgReal.cpp \
 	UltraBorgReal.hpp \
@@ -76,6 +82,7 @@ rover_mqtt_LDADD = \
 	$(PTHREAD_LIBS) \
 	$(protobuf_LIBS) \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
+	$(lttng_ust_LIBS) \
 	-lRTIMULib \
 	libproto.la
 

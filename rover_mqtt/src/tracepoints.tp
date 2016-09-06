@@ -1,0 +1,6 @@
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	startup,
+	TP_ARGS(),
+	TP_FIELDS()
+)

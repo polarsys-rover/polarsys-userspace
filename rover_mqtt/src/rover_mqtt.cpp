@@ -25,6 +25,8 @@
 #include "PiSenseHatReal.hpp"
 #include "PiSenseHatSim.hpp"
 
+#include "tracepoints.h"
+
 static std::condition_variable should_quit_cv;
 static std::mutex should_quit_mutex;
 static bool should_quit = false;
@@ -111,6 +113,8 @@ int main(int argc, char *argv[])
 	std::cerr << ex.what() << std::endl;
 	return 1;
     }
+
+    tracepoint(rover_mqtt, startup);
 
     mosqpp::lib_init();
 
