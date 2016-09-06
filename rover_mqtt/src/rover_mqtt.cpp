@@ -66,7 +66,7 @@ static int parse_args(int argc, char *argv[], options &opts) {
 
     po::options_description desc("rover_mqtt");
     desc.add_options()
-	    ("help", "Show this help")
+	    ("help,h", "Show this help")
 	    ("simulate-ultra-borg", "Simulate the UltraBorg module")
 	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module")
 	    ("simulate-pi-sense-hat", "Simulate the Raspberry Pi Sense Hat module");
