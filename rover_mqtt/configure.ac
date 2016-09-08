@@ -40,6 +40,7 @@ AC_CHECK_HEADER([RTIMULib.h],
 	       )
 
 PKG_CHECK_MODULES(protobuf, protobuf)
+PKG_CHECK_MODULES(lttng_ust, lttng-ust)
 
 AC_CHECK_PROG([PROTOC], [protoc], [protoc])
 AS_IF([test "x${PROTOC}" == "x"], [AC_MSG_ERROR([protobuf compiler "protoc" not found.])])
