@@ -67,31 +67,37 @@ static int parse_args(int argc, char *argv[], options &opts) {
     namespace po = boost::program_options;
 
     po::options_description desc("rover_mqtt");
-    desc.add_options()
-	    ("help,h", "Show this help")
-	    ("simulate-ultra-borg", "Simulate the UltraBorg module")
-	    ("simulate-pico-borg-rev", "Simulate the PicoBorgRev module")
-	    ("simulate-pi-sense-hat", "Simulate the Raspberry Pi Sense Hat module");
+	desc.add_options()
+		("help,h", "Show this help")
+		("simulate-ultra-borg", "Simulate the UltraBorg module")
+		("simulate-pico-borg-rev", "Simulate the PicoBorgRev module")
+		("simulate-pi-sense-hat", "Simulate the Raspberry Pi Sense Hat module")
+		("simulate-all", "Simulate all the modules");
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
 
-    if (vm.count("help")) {
-	std::cout << desc << std::endl;
-	return 1;
-    }
+	if (vm.count("help")) {
+		std::cout << desc << std::endl;
+		return 1;
+	}
 
+	if (vm.count("simulate-all")) {
+		opts.simulate_ultra_borg = 1;
+		opts.simulate_pico_borg_rev = 1;
+		opts.simulate_pi_sense_hat = 1;
+	}
     if (vm.count("simulate-ultra-borg")) {
-	opts.simulate_ultra_borg = 1;
+    	opts.simulate_ultra_borg = 1;
     }
 
     if (vm.count("simulate-pico-borg-rev")) {
-	opts.simulate_pico_borg_rev = 1;
+    	opts.simulate_pico_borg_rev = 1;
     }
 
     if (vm.count("simulate-pi-sense-hat")) {
-	opts.simulate_pi_sense_hat = 1;
+    	opts.simulate_pi_sense_hat = 1;
     }
 
     return 0;
