@@ -15,12 +15,7 @@ BUILT_SOURCES = \
 	tracepoints.h \
 	tracepoints.c
 
-bin_PROGRAMS = rover_mqtt imu motors
-
-motors_SOURCES = \
-    motors.cpp \
-    PicoBorgRevReal.hpp \
-    PicoBorgRevReal.cpp
+bin_PROGRAMS = rover_mqtt
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
@@ -85,10 +80,6 @@ rover_mqtt_LDADD = \
 	$(lttng_ust_LIBS) \
 	-lRTIMULib \
 	libproto.la
-
-imu_SOURCES = \
-	imu.cpp
-imu_LDADD = -lRTIMULib
 
 CLEANFILES = *~
 MOSTLYCLEANFILES = sensors.pb.cc sensors.pb.h
