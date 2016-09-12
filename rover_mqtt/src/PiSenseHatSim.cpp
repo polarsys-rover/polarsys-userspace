@@ -1,6 +1,7 @@
 #include "PiSenseHatSim.hpp"
 
 #include "RobotSensorValues.hpp"
+#include "tracepoints.h"
 
 static uint64_t timespec_to_ms(const struct timespec &ts) {
     return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
@@ -31,6 +32,7 @@ void PiSenseHatSim::fini(void)
 #include <iostream>
 
 RTIMU_DATA PiSenseHatSim::ReadValues(void) {
+	tracepoint(rover_mqtt, ReadHat_begin);
     struct timespec ts;
     RTIMU_DATA imu_data;
 
@@ -57,6 +59,6 @@ RTIMU_DATA PiSenseHatSim::ReadValues(void) {
     imu_data.compass.setZ(11 * sin(2 * M_PI * (elapsed_time / 6000.0)));
 
     imu_data.compassValid = true;
-
+    tracepoint(rover_mqtt, ReadHat_end);
     return imu_data;
 }

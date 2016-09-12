@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <UltraBorgReal.hpp>
 #include <iostream>
+#include <tracepoints.h>
 
 // Defines stolen from the UltraBorg PIC code
 #define I2C_ID_SERVO_USM		(0x36)
@@ -54,19 +55,21 @@ bool UltraBorgReal::init(void)
  */
 int UltraBorgReal::ReadWithCheck(uint8_t command, uint8_t *buf)
 {
-    int ret = i2c_smbus_read_i2c_block_data(m_fd, command,
-	    ULTRABORG_I2C_MAX_LEN, buf);
-    if (ret < 0) {
-	perror("i2c read");
-	return -1;
-    }
+	tracepoint(rover_mqtt, ReadWithCheck_begin);
 
-    if (ret < 1) {
-	std::cerr << "0 bytes read from I2C." << std::endl;
-	return -1;
-    }
+	int ret = i2c_smbus_read_i2c_block_data(m_fd, command,
+			ULTRABORG_I2C_MAX_LEN, buf);
+	if (ret < 0) {
+		perror("i2c read");
+		ret = -1;
+	}
 
-    return ret;
+	if (ret < 1) {
+		std::cerr << "0 bytes read from I2C." << std::endl;
+		ret = -1;
+	}
+	tracepoint(rover_mqtt, ReadWithCheck_end);
+	return ret;
 
 }
 
@@ -85,12 +88,13 @@ uint16_t UltraBorgReal::GetDistance1(void) {
     uint8_t buf[ULTRABORG_I2C_MAX_LEN];
     uint16_t distance;
 
-    int ret = ReadWithCheck(COMMAND_GET_FILTER_USM1, buf);
-    if (ret < 0) {
-	return 0;
-    }
-
-    distance = (buf[1] << 8) + buf[2];
-
+	tracepoint(rover_mqtt, GetDistance_begin);
+	int ret = ReadWithCheck(COMMAND_GET_FILTER_USM1, buf);
+	if (ret < 0) {
+		distance = 0;
+	} else {
+		distance = (buf[1] << 8) + buf[2];
+	}
+	tracepoint(rover_mqtt, GetDistance_end);
     return distance;
 }

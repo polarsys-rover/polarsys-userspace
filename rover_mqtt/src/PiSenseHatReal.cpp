@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "RobotSensorValues.hpp"
+#include "tracepoints.h"
 
 PiSenseHatReal::PiSenseHatReal()
 : m_imu_settings(),
@@ -32,6 +33,7 @@ void PiSenseHatReal::fini(void)
 
 RTIMU_DATA PiSenseHatReal::ReadValues()
 {
+    tracepoint(rover_mqtt, ReadHat_begin);
     /* IMU */
     RTIMU_DATA imu_data;
     InitInvalidIMUData(imu_data);
@@ -39,7 +41,7 @@ RTIMU_DATA PiSenseHatReal::ReadValues()
     if (m_imu->IMURead()) {
 	imu_data = m_imu->getIMUData();
     }
-
+    tracepoint(rover_mqtt, ReadHat_end);
     return imu_data;
 }
 

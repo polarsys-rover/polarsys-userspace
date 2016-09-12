@@ -4,3 +4,59 @@ TRACEPOINT_EVENT(
 	TP_ARGS(),
 	TP_FIELDS()
 )
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	ReadWithCheck_begin,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	ReadWithCheck_end,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	SetMotors_begin,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	SetMotors_end,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	GetDistance_begin,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	GetDistance_end,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	ReadHat_begin,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	ReadHat_end,
+	TP_ARGS(),
+	TP_FIELDS()
+)

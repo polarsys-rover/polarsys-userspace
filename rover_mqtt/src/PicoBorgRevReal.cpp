@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include "tracepoints.h"
 
 // Defines stolen from the PicoBorgRev PIC code
 #define I2C_ID_SERVO_USM		(0x36)
@@ -63,18 +64,19 @@ bool PicoBorgRevReal::init(void)
  */
 int PicoBorgRevReal::ReadWithCheck(uint8_t command, uint8_t *buf)
 {
+	tracepoint(rover_mqtt, ReadWithCheck_begin);
     int ret = i2c_smbus_read_i2c_block_data(m_fd, command,
 	    PicoBorgRev_I2C_MAX_LEN, buf);
     if (ret < 0) {
-	perror("i2c read");
-	return -1;
+		perror("i2c read");
+		ret = -1;
     }
 
     if (ret < 1) {
-	std::cerr << "0 bytes read from I2C." << std::endl;
-	return -1;
+		std::cerr << "0 bytes read from I2C." << std::endl;
+		ret = -1;
     }
-
+    tracepoint(rover_mqtt, ReadWithCheck_end);
     return ret;
 
 }
@@ -91,6 +93,7 @@ PicoBorgRevReal::~PicoBorgRevReal() {
 }
 
 bool PicoBorgRevReal::SetMotors(float power_left, float power_right) {
+	tracepoint(rover_mqtt, SetMotors_begin);
     int ret;
     bool res = true;
 
@@ -116,6 +119,6 @@ bool PicoBorgRevReal::SetMotors(float power_left, float power_right) {
 	perror("write byte data");
 	res = false;
     }
-
+    tracepoint(rover_mqtt, SetMotors_end);
     return res;
 }
