@@ -24,10 +24,11 @@
 
 #define PicoBorgRev_I2C_MAX_LEN 4
 
-PicoBorgRevReal::PicoBorgRevReal(std::string i2c_dev, unsigned char address)
+PicoBorgRevReal::PicoBorgRevReal(std::mutex &mutex, std::string i2c_dev, unsigned char address)
 : m_i2c_dev(i2c_dev),
   m_address(address),
-  m_fd(-1) {
+  m_fd(-1),
+  m_mutex(mutex) {
 }
 
 bool PicoBorgRevReal::init(void)

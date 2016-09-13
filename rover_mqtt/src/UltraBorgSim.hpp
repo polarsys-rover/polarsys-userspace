@@ -2,12 +2,13 @@
 #define ULTRABORGSIM_HPP_
 
 #include <string>
+#include <mutex>
 
 #include "UltraBorg.hpp"
 
 class UltraBorgSim : public UltraBorg {
 public:
-	UltraBorgSim();
+	UltraBorgSim(std::mutex &mutex);
 	virtual ~UltraBorgSim();
 
 	bool init(void);
@@ -17,6 +18,7 @@ public:
 
 private:
 	uint64_t m_start_time;
+	std::mutex &m_mutex;
 };
 
 #endif /* ULTRABORGSIM_HPP_ */

@@ -2,6 +2,10 @@
 
 #include "tracepoints.h"
 
+PicoBorgRevSim::PicoBorgRevSim(std::mutex &mutex):
+m_mutex(mutex){
+}
+
 bool PicoBorgRevSim::init(void)
 {
     return true;

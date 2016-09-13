@@ -3,11 +3,12 @@
 
 #include "PiSenseHat.hpp"
 
+#include <mutex>
 #include <memory>
 
 class PiSenseHatReal : public PiSenseHat {
 public:
-	PiSenseHatReal();
+	PiSenseHatReal(std::mutex &mutex);
 	virtual ~PiSenseHatReal();
 
 	bool init(void);
@@ -22,6 +23,7 @@ private:
 
 	RTIMUSettings m_imu_settings;
 	std::unique_ptr<RTIMU> m_imu;
+	std::mutex &m_mutex;
 };
 
 #endif /* PISENSEHATREAL_HPP_ */

@@ -7,8 +7,9 @@ static uint64_t timespec_to_ms(const struct timespec &ts) {
     return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-PiSenseHatSim::PiSenseHatSim()
-: m_start_time(0)
+PiSenseHatSim::PiSenseHatSim(std::mutex &mutex)
+: m_start_time(0),
+  m_mutex(mutex)
 {
     struct timespec ts;
 

@@ -15,10 +15,11 @@
 
 #define ULTRABORG_I2C_MAX_LEN 4
 
-UltraBorgReal::UltraBorgReal(std::string i2c_dev, unsigned char address)
+UltraBorgReal::UltraBorgReal(std::mutex &mutex, std::string i2c_dev, unsigned char address)
 : m_i2c_dev(i2c_dev),
   m_address(address),
-  m_fd(-1) {
+  m_fd(-1),
+  m_mutex(mutex){
 }
 
 bool UltraBorgReal::init(void)

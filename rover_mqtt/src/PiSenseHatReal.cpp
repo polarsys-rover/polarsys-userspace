@@ -5,9 +5,10 @@
 #include "RobotSensorValues.hpp"
 #include "tracepoints.h"
 
-PiSenseHatReal::PiSenseHatReal()
+PiSenseHatReal::PiSenseHatReal(std::mutex &mutex)
 : m_imu_settings(),
-  m_imu(RTIMU::createIMU(&m_imu_settings))
+  m_imu(RTIMU::createIMU(&m_imu_settings)),
+  m_mutex(mutex)
 {
 }
 

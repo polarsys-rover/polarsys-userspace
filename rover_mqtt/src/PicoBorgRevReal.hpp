@@ -2,12 +2,13 @@
 #define PICOBORGREVREAL_HPP_
 
 #include <string>
+#include <mutex>
 
 #include "PicoBorgRev.hpp"
 
 class PicoBorgRevReal : public PicoBorgRev {
 public:
-	PicoBorgRevReal(std::string i2c_dev, unsigned char address);
+	PicoBorgRevReal(std::mutex &mutex, std::string i2c_dev, unsigned char address);
 	virtual ~PicoBorgRevReal();
 
 	bool init(void);
@@ -21,6 +22,7 @@ private:
 	std::string m_i2c_dev;
 	unsigned char m_address;
 	int m_fd;
+	std::mutex &m_mutex;
 
 	PicoBorgRevReal(const PicoBorgRevReal &) = delete;
 	void operator=(const PicoBorgRevReal &) = delete;
