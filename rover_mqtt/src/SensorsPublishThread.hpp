@@ -12,7 +12,7 @@
 class SensorsPublishThread : public SelectLoopThread {
 public:
 	SensorsPublishThread(const RobotSensorValues &sensor_values,
-			     MqttInterface &mqtt_interface);
+				 MqttInterface &mqtt_interface);
 
 protected:
 	virtual void timeout(void);

@@ -3,12 +3,12 @@
 
 class PicoBorgRev {
 public:
-    virtual ~PicoBorgRev() {}
+	virtual ~PicoBorgRev() {}
 
-    virtual bool init(void) = 0;
-    virtual void fini(void) = 0;
+	virtual bool init(void) = 0;
+	virtual void fini(void) = 0;
 
-    virtual bool SetMotors(float power_left, float power_right) = 0;
+	virtual bool SetMotors(float power_left, float power_right) = 0;
 };
 
 #endif /* PICOBORGREV_HPP_ */

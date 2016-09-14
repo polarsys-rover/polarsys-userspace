@@ -8,29 +8,29 @@
 
 class MqttInterface : private mosqpp::mosquittopp {
 public:
-    MqttInterface(std::string broker_host, int broker_port);
-    virtual ~MqttInterface();
+	MqttInterface(std::string broker_host, int broker_port);
+	virtual ~MqttInterface();
 
-    void start();
-    void stop();
+	void start();
+	void stop();
 
-    void publish(std::string topic, int payload_len, const void *payload);
+	void publish(std::string topic, int payload_len, const void *payload);
 
-    typedef std::function<void(std::string payload)> CallbackType;
-    void subscribe(std::string topic, CallbackType callback);
+	typedef std::function<void(std::string payload)> CallbackType;
+	void subscribe(std::string topic, CallbackType callback);
 
 private:
-    virtual void on_connect(int rc);
-    virtual void on_disconnect(int rc);
-    virtual void on_message(const mosquitto_message *message);
+	virtual void on_connect(int rc);
+	virtual void on_disconnect(int rc);
+	virtual void on_message(const mosquitto_message *message);
 
-    std::string m_broker_host;
-    int m_broker_port;
+	std::string m_broker_host;
+	int m_broker_port;
 
-    std::map<std::string, CallbackType> m_subscriptions;
+	std::map<std::string, CallbackType> m_subscriptions;
 
-    MqttInterface(const MqttInterface &) = delete;
-    void operator=(const MqttInterface &) = delete;
+	MqttInterface(const MqttInterface &) = delete;
+	void operator=(const MqttInterface &) = delete;
 };
 
 #endif /* MQTTINTERFACE_HPP_ */

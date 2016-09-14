@@ -33,32 +33,32 @@ PicoBorgRevReal::PicoBorgRevReal(std::mutex &mutex, std::string i2c_dev, unsigne
 
 bool PicoBorgRevReal::init(void)
 {
-    m_fd = open(m_i2c_dev.c_str(), O_RDWR);
-    uint8_t buf[PicoBorgRev_I2C_MAX_LEN];
+	m_fd = open(m_i2c_dev.c_str(), O_RDWR);
+	uint8_t buf[PicoBorgRev_I2C_MAX_LEN];
 
-    if (m_fd < 0) {
+	if (m_fd < 0) {
 	perror("open i2c dev");
 	return false;
-    }
+	}
 
-    int ret = ioctl(m_fd, I2C_SLAVE, m_address);
-    if (ret < 0) {
+	int ret = ioctl(m_fd, I2C_SLAVE, m_address);
+	if (ret < 0) {
 	perror("ioctl set slave address");
 	return false;
-    }
+	}
 
-    ret = ReadWithCheck(COMMAND_GET_ID, buf);
-    if (ret < 0) {
+	ret = ReadWithCheck(COMMAND_GET_ID, buf);
+	if (ret < 0) {
 	return false;
-    }
+	}
 
-    if (buf[1] != I2C_ID_PICOBORG_REV) {
+	if (buf[1] != I2C_ID_PICOBORG_REV) {
 	fprintf(stderr, "Wrong ID read, PicoBorgRev id = 0x%x, id read from device = 0x%x\n",
 		I2C_ID_PICOBORG_REV, buf[1]);
 	return false;
-    }
+	}
 
-    return true;
+	return true;
 }
 /*
  * Returns the number of bytes read (up to I2C_MAX_LEN).
@@ -72,58 +72,58 @@ int PicoBorgRevReal::ReadWithCheck(uint8_t command, uint8_t *buf)
 		i2c_smbus_read_i2c_block_data(m_fd, command,
 				PicoBorgRev_I2C_MAX_LEN, buf);
 	}
-    if (ret < 0) {
+	if (ret < 0) {
 		perror("i2c read");
 		ret = -1;
-    }
+	}
 
-    if (ret < 1) {
+	if (ret < 1) {
 		std::cerr << "0 bytes read from I2C." << std::endl;
 		ret = -1;
-    }
-    tracepoint(rover_mqtt, ReadWithCheck_end);
-    return ret;
+	}
+	tracepoint(rover_mqtt, ReadWithCheck_end);
+	return ret;
 
 }
 
 void PicoBorgRevReal::fini(void)
 {
-    if (m_fd >= 0) {
+	if (m_fd >= 0) {
 	close(m_fd);
-    }
+	}
 }
 
 PicoBorgRevReal::~PicoBorgRevReal() {
-    fini();
+	fini();
 }
 
 bool PicoBorgRevReal::SetMotors(float power_left, float power_right) {
 	tracepoint(rover_mqtt, SetMotors_begin);
-    int ret;
-    bool res = true;
+	int ret;
+	bool res = true;
 
-    const uint8_t command_left = power_left > 0 ? COMMAND_SET_A_REV : COMMAND_SET_A_FWD;
-    const uint8_t command_right = power_right < 0 ? COMMAND_SET_B_REV : COMMAND_SET_B_FWD;
+	const uint8_t command_left = power_left > 0 ? COMMAND_SET_A_REV : COMMAND_SET_A_FWD;
+	const uint8_t command_right = power_right < 0 ? COMMAND_SET_B_REV : COMMAND_SET_B_FWD;
 
-    power_left = std::min(std::fabs(power_left), 1.0f);
-    power_right = std::min(std::fabs(power_right), 1.0f);
+	power_left = std::min(std::fabs(power_left), 1.0f);
+	power_right = std::min(std::fabs(power_right), 1.0f);
 
-    const uint8_t max_power = 200;
+	const uint8_t max_power = 200;
 
-    const uint8_t pwm_left = max_power * power_left;
-    const uint8_t pwm_right = max_power * power_right;
+	const uint8_t pwm_left = max_power * power_left;
+	const uint8_t pwm_right = max_power * power_right;
 
-    ret = i2c_smbus_write_byte_data(m_fd, command_left, pwm_left);
-    if (ret < 0) {
+	ret = i2c_smbus_write_byte_data(m_fd, command_left, pwm_left);
+	if (ret < 0) {
 	perror("write byte data");
 	res = false;
-    }
+	}
 
-    ret = i2c_smbus_write_byte_data(m_fd, command_right, pwm_right);
-    if (ret < 0) {
+	ret = i2c_smbus_write_byte_data(m_fd, command_right, pwm_right);
+	if (ret < 0) {
 	perror("write byte data");
 	res = false;
-    }
-    tracepoint(rover_mqtt, SetMotors_end);
-    return res;
+	}
+	tracepoint(rover_mqtt, SetMotors_end);
+	return res;
 }

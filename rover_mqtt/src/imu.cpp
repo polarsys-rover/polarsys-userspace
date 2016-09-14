@@ -3,8 +3,8 @@
  *
  * Test the values of rpi sensor hat
  *
- *  Created on: Jul 7, 2016
- *      Author: francis
+ *	Created on: Jul 7, 2016
+ *		Author: francis
  */
 
 #include <iostream>

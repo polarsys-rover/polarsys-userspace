@@ -12,8 +12,8 @@ MotorsControlThread::MotorsControlThread(PicoBorgRev &pico_borg_rev, MqttInterfa
   m_mutex(),
   m_protobuf_controls()
 {
-    m_mqtt_interface.subscribe("/polarsys-rover/controls",
-	    std::bind(&MotorsControlThread::on_message, this, std::placeholders::_1));
+	m_mqtt_interface.subscribe("/polarsys-rover/controls",
+		std::bind(&MotorsControlThread::on_message, this, std::placeholders::_1));
 }
 
 MotorsControlThread::~MotorsControlThread()
@@ -22,20 +22,20 @@ MotorsControlThread::~MotorsControlThread()
 
 void MotorsControlThread::on_message(std::string payload)
 {
-    if (!m_protobuf_controls.ParseFromString(payload)) {
+	if (!m_protobuf_controls.ParseFromString(payload)) {
 	std::cerr << "MotorsControlThread::on_message: failed to parse protobuf." << std::endl;
 	return;
-    }
+	}
 
-    std::lock_guard<std::mutex> lock(m_mutex);
+	std::lock_guard<std::mutex> lock(m_mutex);
 
-    m_target_power_left = m_protobuf_controls.left() / 100.0f;
-    m_target_power_right = m_protobuf_controls.right() / 100.0f;
+	m_target_power_left = m_protobuf_controls.left() / 100.0f;
+	m_target_power_right = m_protobuf_controls.right() / 100.0f;
 
-    std::cout << "Setting motors to (" << m_target_power_left << ", " << m_target_power_right << ")" << std::endl;
+	std::cout << "Setting motors to (" << m_target_power_left << ", " << m_target_power_right << ")" << std::endl;
 }
 
 void MotorsControlThread::timeout(void)
 {
-    m_pico_borg_rev.SetMotors(m_target_power_left, m_target_power_right);
+	m_pico_borg_rev.SetMotors(m_target_power_left, m_target_power_right);
 }

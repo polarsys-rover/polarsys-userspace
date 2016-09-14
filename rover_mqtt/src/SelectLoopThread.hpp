@@ -10,45 +10,45 @@
 
 class SelectLoopThread {
 public:
-    SelectLoopThread(std::string name, int timeout_ms);
-    virtual ~SelectLoopThread();
+	SelectLoopThread(std::string name, int timeout_ms);
+	virtual ~SelectLoopThread();
 
-    /* Kindly ask the thread if it could cease it operation within some
-       reasonable delay. */
-    virtual void please_stop() final;
+	/* Kindly ask the thread if it could cease it operation within some
+	   reasonable delay. */
+	virtual void please_stop() final;
 
-    /* Entry point for the thread execution (meant to be called by std::thread). */
-    virtual void operator()(void) final;
+	/* Entry point for the thread execution (meant to be called by std::thread). */
+	virtual void operator()(void) final;
 
-    const std::string &getName(void);
+	const std::string &getName(void);
 
 protected:
-    /*  */
-    typedef std::function<void()> CallbackType;
-    void register_read_fd(int fd, CallbackType callback);
+	/*	*/
+	typedef std::function<void()> CallbackType;
+	void register_read_fd(int fd, CallbackType callback);
 
-    virtual void init(void) {}
-    virtual void fini(void) {}
+	virtual void init(void) {}
+	virtual void fini(void) {}
 
-    /* Method called when the select/poll timeout expired.  Meant to be
-       overridden by extending classes. */
-    virtual void timeout(void) {}
+	/* Method called when the select/poll timeout expired.	Meant to be
+	   overridden by extending classes. */
+	virtual void timeout(void) {}
 
 private:
-    SelectLoopThread(const SelectLoopThread &) = delete;
-    void operator=(const SelectLoopThread &) = delete;
+	SelectLoopThread(const SelectLoopThread &) = delete;
+	void operator=(const SelectLoopThread &) = delete;
 
-    /* Internal callback that sets m_quit. */
-    void mark_quit(void);
+	/* Internal callback that sets m_quit. */
+	void mark_quit(void);
 
-    std::string m_name;
-    int m_timeout_ms;
+	std::string m_name;
+	int m_timeout_ms;
 
-    int m_quit_read_fd, m_quit_write_fd;
-    bool m_quit;
+	int m_quit_read_fd, m_quit_write_fd;
+	bool m_quit;
 
-    std::map<int, CallbackType> m_callbacks;
-    std::vector<struct pollfd> m_pollfds;
+	std::map<int, CallbackType> m_callbacks;
+	std::vector<struct pollfd> m_pollfds;
 };
 
 #endif /* SELECTLOOPTHREAD_HPP */

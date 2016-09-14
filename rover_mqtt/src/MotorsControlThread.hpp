@@ -11,25 +11,25 @@
 
 class MotorsControlThread: public SelectLoopThread {
 public:
-    MotorsControlThread(PicoBorgRev &pico_borg_rev, MqttInterface &mqtt_interface);
-    virtual ~MotorsControlThread();
+	MotorsControlThread(PicoBorgRev &pico_borg_rev, MqttInterface &mqtt_interface);
+	virtual ~MotorsControlThread();
 
-    void on_message(std::string payload);
-    void timeout(void);
+	void on_message(std::string payload);
+	void timeout(void);
 
 private:
-    PicoBorgRev &m_pico_borg_rev;
-    MqttInterface &m_mqtt_interface;
+	PicoBorgRev &m_pico_borg_rev;
+	MqttInterface &m_mqtt_interface;
 
-    float m_target_power_left;
-    float m_target_power_right;
+	float m_target_power_left;
+	float m_target_power_right;
 
-    std::mutex m_mutex;
+	std::mutex m_mutex;
 
-    PolarsysRover::RoverControls m_protobuf_controls;
+	PolarsysRover::RoverControls m_protobuf_controls;
 
-    MotorsControlThread(const MotorsControlThread &) = delete;
-    void operator=(const MotorsControlThread &) = delete;
+	MotorsControlThread(const MotorsControlThread &) = delete;
+	void operator=(const MotorsControlThread &) = delete;
 };
 
 #endif /* SRC_MOTORSCONTROLTHREAD_HPP_ */

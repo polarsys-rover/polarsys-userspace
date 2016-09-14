@@ -11,7 +11,7 @@
 class SensorsThread : public SelectLoopThread {
 public:
 	SensorsThread(RobotSensorValues &sensor_values, UltraBorg &ultra_borg,
-		      PiSenseHat &pi_sense_hat);
+			  PiSenseHat &pi_sense_hat);
 	virtual ~SensorsThread();
 
 	virtual void timeout(void);
