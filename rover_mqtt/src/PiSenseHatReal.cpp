@@ -38,10 +38,10 @@ RTIMU_DATA PiSenseHatReal::ReadValues()
     /* IMU */
     RTIMU_DATA imu_data;
     InitInvalidIMUData(imu_data);
-
-    if (m_imu->IMURead()) {
-	imu_data = m_imu->getIMUData();
-    }
+	if (m_imu->IMURead()) {
+		std::lock_guard<std::mutex> lock(m_mutex);
+		imu_data = m_imu->getIMUData();
+	}
     tracepoint(rover_mqtt, ReadHat_end);
     return imu_data;
 }

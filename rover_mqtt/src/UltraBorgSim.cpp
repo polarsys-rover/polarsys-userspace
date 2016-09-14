@@ -1,5 +1,7 @@
 #include "UltraBorgSim.hpp"
 #include "tracepoints.h"
+#include <chrono>
+#include <thread>
 
 static uint64_t timespec_to_ms(const struct timespec &ts) {
     return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
@@ -31,12 +33,12 @@ void UltraBorgSim::fini(void)
 
 uint16_t UltraBorgSim::GetDistance1(void) {
     struct timespec ts;
-
     tracepoint(rover_mqtt, GetDistance_begin);
     clock_gettime(CLOCK_MONOTONIC, &ts);
-
-
-
+    {
+		std::lock_guard<std::mutex> lock(m_mutex);
+    	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
     uint64_t elapsed_time = timespec_to_ms(ts) - m_start_time;
     uint64_t x = elapsed_time % 10000;
     uint64_t b = 500;
