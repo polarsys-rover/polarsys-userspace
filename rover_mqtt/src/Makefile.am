@@ -15,7 +15,13 @@ BUILT_SOURCES = \
 	tracepoints.h \
 	tracepoints.c
 
-bin_PROGRAMS = rover_mqtt
+bin_PROGRAMS = rover_mqtt adc_test
+
+adc_test_SOURCES = \
+	adc_test.cpp
+
+adc_test_CXXFLAGS = \
+	-Wall -Werror -Weffc++
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
