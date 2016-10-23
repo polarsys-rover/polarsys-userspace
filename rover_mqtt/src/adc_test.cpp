@@ -14,9 +14,6 @@
 #define ADS1115_REG_CONVERSION 0
 #define ADS1115_REG_CONFIG 1
 
-#define VOLTAGE_DIVIDER_RATIO 5.0
-#define VOLTAGE_SCALE 4.096
-
 
 class ADS1115Conf {
 public:
@@ -320,13 +317,16 @@ void PrintADS1115Conf(const ADS1115Conf &conf)
 }
 
 float ConvertToVolts(uint16_t value, float scale, float voltage_divider) {
-	return (value / 32767.0) * scale * voltage_divider;
+	return (value / 32767.0) * scale /voltage_divider;
 }
 
 // FIXME: what is the max voltage?
 #define NUM_CELLS 3
 #define VOLTAGE_MAX (4.2 * NUM_CELLS)
 #define VOLTAGE_MIN (3.0 * NUM_CELLS)
+#define VOLTAGE_DIVIDER_RATIO (6.70/(19.87+6.70))
+#define VOLTAGE_SCALE 4.096
+
 
 float ConvertVoltageToPercent(float voltage)
 {
