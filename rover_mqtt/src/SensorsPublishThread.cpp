@@ -8,8 +8,6 @@
 #include <sensors.pb.h>
 #include <SensorsPublishThread.hpp>
 
-#define MQTT_BROKER_ADDR "127.0.0.1"
-#define MQTT_BROKER_PORT 1883
 #define MQTT_SENSORS_TOPIC "/polarsys-rover/sensors"
 
 /* Values used to compute the voltage from the ADC read. */
