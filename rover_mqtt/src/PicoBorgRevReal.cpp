@@ -69,7 +69,7 @@ int PicoBorgRevReal::ReadWithCheck(uint8_t command, uint8_t *buf)
 	tracepoint(rover_mqtt, ReadWithCheck_begin);
 	{
 		std::lock_guard<std::mutex> lock(m_mutex);
-		i2c_smbus_read_i2c_block_data(m_fd, command,
+		ret = i2c_smbus_read_i2c_block_data(m_fd, command,
 				PicoBorgRev_I2C_MAX_LEN, buf);
 	}
 	if (ret < 0) {
