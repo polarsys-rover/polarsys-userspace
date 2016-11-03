@@ -19,7 +19,7 @@ void MqttInterface::start(void)
 	mosqpp::mosquittopp::reconnect_delay_set(3, 30, true);
 	mosqpp::mosquittopp::connect_async(m_broker_host.c_str(), m_broker_port);
 
-	std::cout << "Starting MQTT server" << std::endl;
+	std::cout << "Starting MQTT thread" << std::endl;
 
 	mosqpp::mosquittopp::loop_start();
 }
