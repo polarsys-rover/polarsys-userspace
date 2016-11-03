@@ -5,6 +5,7 @@
 #include <functional>
 #include <mosquittopp.h>
 #include <map>
+#include <mutex>
 
 class MqttInterface : private mosqpp::mosquittopp {
 public:
@@ -24,10 +25,13 @@ private:
 	virtual void on_disconnect(int rc);
 	virtual void on_message(const mosquitto_message *message);
 
+	void do_subscribe(const std::string &topic);
+
 	std::string m_broker_host;
 	int m_broker_port;
 
 	std::map<std::string, CallbackType> m_subscriptions;
+	std::mutex m_mutex;
 
 	MqttInterface(const MqttInterface &) = delete;
 	void operator=(const MqttInterface &) = delete;
