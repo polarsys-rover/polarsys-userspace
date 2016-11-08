@@ -21,23 +21,23 @@ ADS1115Real::ADS1115Real(std::mutex &mutex, const std::string &i2c_dev,
 
 bool ADS1115Real::init() {
 	m_fd = open(m_i2c_dev.c_str(), O_RDWR);
+        ADS1115Conf conf;
+	int ret;
 
 	if (m_fd < 0) {
 		perror("open i2c dev");
-		return false;
+		goto fail;
 	}
 
-	int ret = ioctl(m_fd, I2C_SLAVE, m_address);
+	ret = ioctl(m_fd, I2C_SLAVE, m_address);
 	if (ret < 0) {
 		perror("ioctl set slave address");
-		return false;
+		goto fail;
 	}
-
-        ADS1115Conf conf;
 
         if (!ReadConf(conf)) {
                 std::cerr << "Couldn't read config from ADS1115" << std::endl;
-                return false;
+		goto fail;
         }
 
         /* We want to read from input 3. */
@@ -48,10 +48,18 @@ bool ADS1115Real::init() {
 
         if (!WriteConf(conf)) {
                 std::cerr << "Couldn't write config to ADS1115" << std::endl;
-                return false;
+		goto fail;
         }
 
         return true;
+
+fail:
+	if (m_fd >= 0) {
+		close(m_fd);
+		m_fd = -1;
+	}
+
+	return false;
 }
 
 /*
@@ -103,6 +111,7 @@ bool ADS1115Real::WriteWithCheck(uint8_t command, const uint8_t *buf) {
 void ADS1115Real::fini() {
 	if (m_fd >= 0) {
 		close(m_fd);
+		m_fd = 1;
 	}
 }
 
