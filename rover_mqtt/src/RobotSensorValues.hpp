@@ -15,6 +15,16 @@ struct SonarDistance {
 	bool sonar_distance_valid;
 };
 
+struct BatteryVoltage {
+	BatteryVoltage()
+	: value(UINT16_MAX),
+	  valid(false)
+	{}
+
+	uint16_t value;
+	bool valid;
+};
+
 static inline void InitInvalidIMUData(RTIMU_DATA &imu_data)
 {
 	imu_data.accelValid = false;
@@ -31,16 +41,21 @@ class RobotSensorValues {
 public:
 	RobotSensorValues();
 
-	RTIMU_DATA getIMUData(void) const;
+	RTIMU_DATA getIMUData() const;
 	void setIMUData(const RTIMU_DATA &data);
 
-	SonarDistance getSonarDistance(void) const;
+	SonarDistance getSonarDistance() const;
 	void setSonarDistance(const SonarDistance &sonar_distance);
+
+	BatteryVoltage getBatteryVoltage() const;
+	void setBatteryVoltage(const BatteryVoltage &battery_voltage);
 
 private:
 	RTIMU_DATA m_imu_data;
 
 	SonarDistance m_sonar_distance;
+
+	BatteryVoltage m_battery_voltage;
 
 	mutable std::mutex m_mutex;
 };

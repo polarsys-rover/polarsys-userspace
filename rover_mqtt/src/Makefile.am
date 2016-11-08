@@ -25,6 +25,9 @@ adc_test_CXXFLAGS = \
 
 rover_mqtt_SOURCES = \
 	rover_mqtt.cpp \
+	ADS1115.hpp \
+	ADS1115Real.hpp \
+	ADS1115Real.cpp \
 	RobotSensorValues.cpp \
 	RobotSensorValues.hpp \
 	SensorsThread.cpp \
@@ -73,7 +76,7 @@ rover_mqtt_CXXFLAGS = \
 	$(rover_mqtt_CFLAGS) \
 	$(PTHREAD_CFLAGS) \
 	$(protobuf_CFLAGS) \
-	-Wall -Werror -Weffc++
+	-Wall -Werror -Weffc++ -fdiagnostics-color=always
 
 rover_mqtt_LDFLAGS = \
 	$(BOOST_PROGRAM_OPTIONS_LDFLAGS)

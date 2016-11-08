@@ -10,6 +10,7 @@
 RobotSensorValues::RobotSensorValues() :
 	m_imu_data(),
 	m_sonar_distance(),
+	m_battery_voltage(),
 	m_mutex()
 {
 	InitInvalidIMUData(m_imu_data);
@@ -50,4 +51,22 @@ void RobotSensorValues::setSonarDistance(const SonarDistance &sonar_distance)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 	m_sonar_distance = sonar_distance;
+}
+
+BatteryVoltage RobotSensorValues::getBatteryVoltage() const
+{
+	BatteryVoltage temp;
+
+	{
+		std::lock_guard<std::mutex> lock(m_mutex);
+		temp = m_battery_voltage;
+	}
+
+	return temp;
+}
+
+void RobotSensorValues::setBatteryVoltage(const BatteryVoltage &battery_voltage)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+	m_battery_voltage = battery_voltage;
 }

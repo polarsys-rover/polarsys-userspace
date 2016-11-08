@@ -25,6 +25,8 @@
 #include "PiSenseHatReal.hpp"
 #include "PiSenseHatSim.hpp"
 
+#include "ADS1115Real.hpp"
+
 #include "tracepoints.h"
 
 static std::condition_variable should_quit_cv;
@@ -44,6 +46,7 @@ static void sigIntHandler(int signum) {
 #define I2C_DEV "/dev/i2c-1"
 #define I2C_ULTRA_BORG_ADDR 0x36
 #define I2C_PICO_BORG_REF_ADDR 0x44
+#define I2C_ADS1115_ADDR 0x48
 
 struct options {
 	options() :
@@ -103,6 +106,7 @@ int main(int argc, char *argv[]) {
 	std::unique_ptr<UltraBorg> ultra_borg_p;
 	std::unique_ptr<PicoBorgRev> pico_borg_rev_p;
 	std::unique_ptr<PiSenseHat> pi_sense_hat_p;
+	std::unique_ptr<ADS1115> ads1115_p;
 	std::mutex i2c_mutex;
 
 	options opts;
@@ -144,6 +148,8 @@ int main(int argc, char *argv[]) {
 		pi_sense_hat_p.reset(new PiSenseHatReal(i2c_mutex));
 	}
 
+	ads1115_p.reset(new ADS1115Real(i2c_mutex, I2C_DEV, I2C_ADS1115_ADDR));
+
 	if (!ultra_borg_p->init()) {
 		std::cerr << "Could not initialize UltraBorg" << std::endl;
 		return 1;
@@ -159,12 +165,18 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
+	if (!ads1115_p->init()) {
+		std::cerr << "Could not initialize ADS1115" << std::endl;
+		/* This is not a fatal error, we can live without it. */
+	}
+
+
 	/* Store for the most recently acquired sensor values. */
 	RobotSensorValues sensor_values;
 
 	/* Thread continuously reading the sensor values. */
 	SensorsThread sensors_callback(sensor_values, *ultra_borg_p,
-			*pi_sense_hat_p);
+			*pi_sense_hat_p, *ads1115_p);
 	std::thread sensors_thread(std::ref(sensors_callback));
 	pthread_setname_np(sensors_thread.native_handle(),
 			sensors_callback.getName().c_str());

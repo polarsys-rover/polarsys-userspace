@@ -12,6 +12,11 @@
 #define MQTT_BROKER_PORT 1883
 #define MQTT_SENSORS_TOPIC "/polarsys-rover/sensors"
 
+/* Values used to compute the voltage from the ADC read. */
+#define NUM_CELLS 3
+#define VOLTAGE_DIVIDER_RATIO (6.70/(19.87+6.70))
+#define VOLTAGE_SCALE 4096
+
 SensorsPublishThread::SensorsPublishThread(const RobotSensorValues &sensor_values,
 					   MqttInterface &mqtt_interface)
 : SelectLoopThread("mqtt-thread", 200),
@@ -21,6 +26,11 @@ SensorsPublishThread::SensorsPublishThread(const RobotSensorValues &sensor_value
 {
 	m_protobuf_sensors->set_allocated_accel(new PolarsysRover::Acceleration());
 }
+
+static float ConvertToMillivolts(uint16_t value, float scale, float voltage_divider) {
+	return (value / 32767.0) * scale / voltage_divider;
+}
+
 
 void SensorsPublishThread::timeout (void)
 {
@@ -55,6 +65,13 @@ void SensorsPublishThread::timeout (void)
 
 	if (sonar_distance.sonar_distance_valid) {
 	m_protobuf_sensors->set_sonar(sonar_distance.sonar_distance);
+	}
+
+	BatteryVoltage battery_voltage = m_sensor_values.getBatteryVoltage();
+
+	if (battery_voltage.valid) {
+		m_protobuf_sensors->set_battery_voltage(
+			ConvertToMillivolts(battery_voltage.value, VOLTAGE_SCALE, VOLTAGE_DIVIDER_RATIO));
 	}
 
 	m_protobuf_sensors->SerializeToString(&encoded);
