@@ -23,7 +23,7 @@ var roverDashboardApp = angular.module('roverDashboardApp', []);
 
 roverDashboardApp.controller('MainPageController', ['$scope', 'mqtt', function ($scope, mqtt) {
     /* localStorage refers to https://developer.mozilla.org/en-US/docs/Web/API/Storage */
-    var host = localStorage.getItem('mqtt-host') || '127.0.0.1';
+    var host = localStorage.getItem('mqtt-host') || window.location.hostname || '127.0.0.1';
     var port = parseInt(localStorage.getItem('mqtt-port')) || 9001;
 
 	$scope.host = host;
