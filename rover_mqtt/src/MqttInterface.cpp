@@ -20,7 +20,7 @@ void MqttInterface::do_subscribe(const std::string &topic) {
 	 * no-op. */
 	int ret = mosqpp::mosquittopp::subscribe(NULL, topic.c_str(), 0);
 
-	std::cout << "Subscribing to " << topic << ", ret = " << ret;
+	std::cout << "Subscribing to " << topic << ", ret = " << ret << std::endl;
 }
 
 void MqttInterface::start(void)
