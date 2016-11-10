@@ -1,3 +1,9 @@
 *.pb.cc
 *.pb.h
 *.a
+*.la
+*.lo
+.libs
+tracepoints.c
+tracepoints.h
+rover_mqtt
