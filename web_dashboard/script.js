@@ -74,6 +74,7 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
         gyro: {},
         compass: {},
         sonar: null,
+        battery: null,
     };
 
     $scope.mqtt = mqtt;
@@ -81,6 +82,7 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
     var onMessage = function (message) {
 
         var decodedMessage = $scope.messageDecoder.decode(message.payloadBytes);
+        console.log(decodedMessage);
         $scope.$apply(function () {
             if (decodedMessage.accel != null) {
                 $scope.sensors.accel.x = decodedMessage.accel.x;
@@ -113,6 +115,7 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
             }
 
             $scope.sensors.sonar = decodedMessage.sonar;
+            $scope.sensors.battery = decodedMessage.battery_voltage;
         });
     };
 

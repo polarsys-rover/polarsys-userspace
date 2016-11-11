@@ -41,6 +41,9 @@
         <li>
           Sonar: {{ sensors.sonar || '?' }}
         </li>
+        <li>
+          Battery: {{ (sensors.battery / 1000) | number : 2 || '?' }}
+        </li>
       </ul>
     </div>
 
