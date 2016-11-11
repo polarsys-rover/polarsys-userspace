@@ -21,6 +21,20 @@ TRACEPOINT_EVENT(
 
 TRACEPOINT_EVENT(
 	rover_mqtt,
+	WriteWithCheck_begin,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
+	WriteWithCheck_end,
+	TP_ARGS(),
+	TP_FIELDS()
+)
+
+TRACEPOINT_EVENT(
+	rover_mqtt,
 	SetMotors_begin,
 	TP_ARGS(),
 	TP_FIELDS()
