@@ -82,7 +82,7 @@ roverDashboardApp.controller('RoverSensorsController', ['$scope', 'mqtt', functi
     var onMessage = function (message) {
 
         var decodedMessage = $scope.messageDecoder.decode(message.payloadBytes);
-        console.log(decodedMessage);
+        //console.log(decodedMessage);
         $scope.$apply(function () {
             if (decodedMessage.accel != null) {
                 $scope.sensors.accel.x = decodedMessage.accel.x;
