@@ -94,7 +94,11 @@ rover_mqtt_LDADD = \
 	$(BOOST_PROGRAM_OPTIONS_LIBS) \
 	$(lttng_ust_LIBS) \
 	-lRTIMULib \
-	libproto.la
+	libproto.la \
+	-lraspicam \
+	-lraspicam_cv \
+	-lopencv_highgui \
+	-lopencv_core
 
 CLEANFILES = *~
 MOSTLYCLEANFILES = sensors.pb.cc sensors.pb.h

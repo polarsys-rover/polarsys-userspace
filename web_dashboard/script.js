@@ -193,6 +193,8 @@ roverDashboardApp.controller('RoverFrontCameraController', ['$scope', 'mqtt', fu
         var blob = new Blob([message.payloadBytes], {type: 'image/jpeg'});
         var url = window.URL.createObjectURL(blob);
 
+	console.log("Image!");
+
         $scope.$apply(function() {
             $scope.imageUrl = url;
         });

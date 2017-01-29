@@ -40,7 +40,7 @@ void MqttInterface::stop()
 
 void MqttInterface::publish(std::string topic, int payload_len, const void *payload)
 {
-	mosqpp::mosquittopp::publish(NULL, topic.c_str(), payload_len, payload, 0, false);
+	mosqpp::mosquittopp::publish(NULL, topic.c_str(), payload_len, payload);
 }
 
 
