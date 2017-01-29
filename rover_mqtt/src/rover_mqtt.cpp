@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
 			mqtt_callback.getName().c_str());
 
 
-	CameraThread camera_callback(*pi_cam_p);
+	CameraThread camera_callback(*pi_cam_p, mqtt_interface);
 	std::thread camera_thread(std::ref(camera_callback));
 	pthread_setname_np(camera_thread.native_handle(), camera_callback.getName().c_str());
 
