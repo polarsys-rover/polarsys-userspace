@@ -28,6 +28,8 @@ rover_mqtt_SOURCES = \
 	ADS1115.hpp \
 	ADS1115Real.hpp \
 	ADS1115Real.cpp \
+	CameraThread.hpp \
+	CameraThread.cpp \
 	RobotSensorValues.cpp \
 	RobotSensorValues.hpp \
 	SensorsThread.cpp \
@@ -38,6 +40,10 @@ rover_mqtt_SOURCES = \
 	MotorsControlThread.hpp \
 	MqttInterface.cpp \
 	MqttInterface.hpp \
+	PiCam.hpp \
+	PiCam.cpp \
+	PiCamReal.hpp \
+	PiCamReal.cpp \
 	PicoBorgRev.hpp \
 	PicoBorgRevReal.cpp \
 	PicoBorgRevReal.hpp \

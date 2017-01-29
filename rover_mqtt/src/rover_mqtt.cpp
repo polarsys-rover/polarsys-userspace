@@ -27,6 +27,10 @@
 
 #include "ADS1115Real.hpp"
 
+#include "CameraThread.hpp"
+#include "PiCam.hpp"
+#include "PiCamReal.hpp"
+
 #include "tracepoints.h"
 
 static std::condition_variable should_quit_cv;
@@ -107,6 +111,7 @@ int main(int argc, char *argv[]) {
 	std::unique_ptr<PicoBorgRev> pico_borg_rev_p;
 	std::unique_ptr<PiSenseHat> pi_sense_hat_p;
 	std::unique_ptr<ADS1115> ads1115_p;
+	std::unique_ptr<PiCam> pi_cam_p;
 	std::mutex i2c_mutex;
 
 	options opts;
@@ -150,6 +155,8 @@ int main(int argc, char *argv[]) {
 
 	ads1115_p.reset(new ADS1115Real(i2c_mutex, I2C_DEV, I2C_ADS1115_ADDR));
 
+	pi_cam_p.reset(new PiCamReal());
+
 	if (!ultra_borg_p->init()) {
 		std::cerr << "Could not initialize UltraBorg" << std::endl;
 		return 1;
@@ -170,6 +177,11 @@ int main(int argc, char *argv[]) {
 		/* This is not a fatal error, we can live without it. */
 	}
 
+	if (!pi_cam_p->init()) {
+		std::cerr << "Could not initialize PiCam" << std::endl;
+		return 1;
+	}
+
 
 	/* Store for the most recently acquired sensor values. */
 	RobotSensorValues sensor_values;
@@ -186,6 +198,11 @@ int main(int argc, char *argv[]) {
 	std::thread mqtt_thread(std::ref(mqtt_callback));
 	pthread_setname_np(mqtt_thread.native_handle(),
 			mqtt_callback.getName().c_str());
+
+
+	CameraThread camera_callback(*pi_cam_p);
+	std::thread camera_thread(std::ref(camera_callback));
+	pthread_setname_np(camera_thread.native_handle(), camera_callback.getName().c_str());
 
 	/* Thread controlling the motors. */
 	MotorsControlThread motors_control_callback(*pico_borg_rev_p,
@@ -205,10 +222,12 @@ int main(int argc, char *argv[]) {
 
 	sensors_callback.please_stop();
 	mqtt_callback.please_stop();
+	camera_callback.please_stop();
 	motors_control_callback.please_stop();
 
 	sensors_thread.join();
 	mqtt_thread.join();
+	camera_thread.join();
 	motors_control_thread.join();
 
 	mqtt_interface.stop();
