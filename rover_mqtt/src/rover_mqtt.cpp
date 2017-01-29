@@ -54,8 +54,10 @@ static void sigIntHandler(int signum) {
 
 struct options {
 	options() :
-			simulate_ultra_borg(0), simulate_pico_borg_rev(0), simulate_pi_sense_hat(
-					0) {
+		simulate_ultra_borg(0),
+		simulate_pico_borg_rev(0),
+		simulate_pi_sense_hat(0),
+		use_camera(true) {
 	}
 
 	void do_stuff(int a, char c, std::string b) {
@@ -65,17 +67,20 @@ struct options {
 	int simulate_ultra_borg;
 	int simulate_pico_borg_rev;
 	int simulate_pi_sense_hat;
+	bool use_camera;
 };
 
 static int parse_args(int argc, char *argv[], options &opts) {
 	namespace po = boost::program_options;
 
 	po::options_description desc("rover_mqtt");
-	desc.add_options()("help,h", "Show this help")("simulate-ultra-borg",
-			"Simulate the UltraBorg module")("simulate-pico-borg-rev",
-			"Simulate the PicoBorgRev module")("simulate-pi-sense-hat",
-			"Simulate the Raspberry Pi Sense Hat module")("simulate-all",
-			"Simulate all the modules");
+	desc.add_options()
+		("help,h", "Show this help")
+		("simulate-ultra-borg", "Simulate the UltraBorg module")
+		("simulate-pico-borg-rev", "Simulate the PicoBorgRev module")
+		("simulate-pi-sense-hat", "Simulate the Raspberry Pi Sense Hat module")
+		("simulate-all", "Simulate all the modules")
+		("no-camera", "Disable the camera");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -103,6 +108,10 @@ static int parse_args(int argc, char *argv[], options &opts) {
 		opts.simulate_pi_sense_hat = 1;
 	}
 
+	if (vm.count("no-camera")) {
+		opts.use_camera = false;
+	}
+
 	return 0;
 }
 
@@ -113,6 +122,9 @@ int main(int argc, char *argv[]) {
 	std::unique_ptr<ADS1115> ads1115_p;
 	std::unique_ptr<PiCam> pi_cam_p;
 	std::mutex i2c_mutex;
+
+	std::unique_ptr<CameraThread> camera_callback_p;
+	std::unique_ptr<std::thread> camera_thread_p;
 
 	options opts;
 
@@ -177,11 +189,12 @@ int main(int argc, char *argv[]) {
 		/* This is not a fatal error, we can live without it. */
 	}
 
-	if (!pi_cam_p->init()) {
-		std::cerr << "Could not initialize PiCam" << std::endl;
-		return 1;
+	if (opts.use_camera) {
+		if (!pi_cam_p->init()) {
+			std::cerr << "Could not initialize PiCam" << std::endl;
+			return 1;
+		}
 	}
-
 
 	/* Store for the most recently acquired sensor values. */
 	RobotSensorValues sensor_values;
@@ -200,9 +213,11 @@ int main(int argc, char *argv[]) {
 			mqtt_callback.getName().c_str());
 
 
-	CameraThread camera_callback(*pi_cam_p, mqtt_interface);
-	std::thread camera_thread(std::ref(camera_callback));
-	pthread_setname_np(camera_thread.native_handle(), camera_callback.getName().c_str());
+	if (opts.use_camera) {
+		camera_callback_p.reset(new CameraThread(*pi_cam_p, mqtt_interface));
+		camera_thread_p.reset(new std::thread(std::ref(*camera_callback_p)));
+		pthread_setname_np(camera_thread_p->native_handle(), camera_callback_p->getName().c_str());
+	}
 
 	/* Thread controlling the motors. */
 	MotorsControlThread motors_control_callback(*pico_borg_rev_p,
@@ -222,12 +237,14 @@ int main(int argc, char *argv[]) {
 
 	sensors_callback.please_stop();
 	mqtt_callback.please_stop();
-	camera_callback.please_stop();
+	if (camera_callback_p != nullptr)
+		camera_callback_p->please_stop();
 	motors_control_callback.please_stop();
 
 	sensors_thread.join();
 	mqtt_thread.join();
-	camera_thread.join();
+	if (camera_thread_p != nullptr)
+		camera_thread_p->join();
 	motors_control_thread.join();
 
 	mqtt_interface.stop();
