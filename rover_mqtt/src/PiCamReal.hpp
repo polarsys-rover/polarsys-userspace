@@ -16,6 +16,7 @@ public:
 
 private:
 	raspicam::RaspiCam_Cv m_cam;
+	int m_brightness;
 };
 
 #endif /* SRC_PICAMREAL_HPP_ */
